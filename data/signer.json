@@ -1,0 +1,302 @@
+[
+  {
+    "name": "Accel Partners",
+    "department": "Venture Capital Firm",
+    "addresses": [
+      "0xd9BA47739E6Cb24bd4B670e32cb1440e082688D1"
+    ]
+  },
+  {
+    "name": "Aishwary",
+    "department": "Head - India & Payment & Global Head - FinTech & Payments at Polygon",
+    "addresses": [
+      "0xe736dFd4659eE4793E509F7c3A4448B2b3148f02"
+    ]
+  },
+  {
+    "name": "Rajath",
+    "department": null,
+    "addresses": [
+      "0xDf83E84F1eB00F0230eB912E2Ec823C979800B1c",
+      "0xdf83e84f1eb00f0230eb912e2ec823c979800b1c"
+    ]
+  },
+  {
+    "name": "Gus",
+    "department": null,
+    "addresses": [
+      "0x1f7A03b70C5448DFd0a2C5a7865169253c2C769b",
+      "0x1f7a03b70c5448dfd0a2c5a7865169253c2c769b"
+    ]
+  },
+  {
+    "name": "Dheeraj",
+    "department": "Account 1",
+    "addresses": [
+      "0x7AAd74b7f0d60D5867B59dbD377a71783425af47",
+      "0xc6160f5bc3c673ac390f11c492e8ed0d0693579a",
+      "0x7aad74b7f0d60d5867b59dbd377a71783425af47",
+      "0x75db63125a4f04e59a1a2ab4acc4fc1cd5daddd5",
+      "0x8e0a538081ba1d7f41b7c594f0a2afe7ae558494"
+    ]
+  },
+  {
+    "name": "Dheeraj",
+    "department": "Stader co-founder",
+    "addresses": [
+      "0x75db63125A4f04E59A1A2Ab4aCC4FC1Cd5Daddd5"
+    ]
+  },
+  {
+    "name": "Timo",
+    "department": "Ledger",
+    "addresses": [
+      "0x51C59785639CCa31c09D0833749e76A5D945C9F3",
+      "0x51c59785639cca31c09d0833749e76a5d945c9f3"
+    ]
+  },
+  {
+    "name": "Timo",
+    "department": "Hot Wallet",
+    "addresses": [
+      "0x5DB1955f51f892ce1bbEf3EcEC8a46b85fe75F27"
+    ]
+  },
+  {
+    "name": "Amit",
+    "department": null,
+    "addresses": [
+      "0x746d6a9f789999799AE7f5d62Aa70422F86826b6",
+      "0x746d6a9f789999799ae7f5d62aa70422f86826b6"
+    ]
+  },
+  {
+    "name": "Sidhartha",
+    "department": "Mira co-founder",
+    "addresses": [
+      "0x601767c4ba4134cc2E906ea7cf25EaB845152A7C"
+    ]
+  },
+  {
+    "name": "Saurabh",
+    "department": null,
+    "addresses": [
+      "0x268DA1016634e06f17F11CF584C5Ddf1c44787eb",
+      "0xb8ffad4020c76f9fe9b49c68b417fd8cb4c20516"
+    ]
+  },
+  {
+    "name": "Manoj",
+    "department": null,
+    "addresses": [
+      "0x0e4B97563723eF7f0a7FDe4c7bD3B17a5bF63fBf",
+      "0x0e4b97563723ef7f0a7fde4c7bd3b17a5bf63fbf",
+      "0x374ac9ef5aa496440a5b3a3d3abb9dece7400d89"
+    ]
+  },
+  {
+    "name": "Punit",
+    "department": null,
+    "addresses": [
+      "0x86CbBAEB08861D005fD2147A5123E43e558db167",
+      "0x86cbbaeb08861d005fd2147a5123e43e558db167"
+    ]
+  },
+  {
+    "name": "Mihailo",
+    "department": "Hot Wallet",
+    "addresses": [
+      "0xCF7bF9D3a485b9c4d4A38d65e4d68e081a585662",
+      "0xfcc1c98f887c93c38deb5e38a6fb820ad3fb9dfd"
+    ]
+  },
+  {
+    "name": "Mihailo",
+    "department": "Hardware Wallet",
+    "addresses": [
+      "0xFCc1C98F887C93C38Deb5e38A6Fb820AD3fB9DFD"
+    ]
+  },
+  {
+    "name": "Crash (Hassan)",
+    "department": null,
+    "addresses": [
+      "0x956764BAd3aDf4e5a1DAFf3B68343a845B3fE45C"
+    ]
+  },
+  {
+    "name": "Batphonghan",
+    "department": null,
+    "addresses": [
+      "0xa2a4A1Cb7AB2D6E5aae489572ea4d23E649DB11d"
+    ]
+  },
+  {
+    "name": "Kelp Operator EOA",
+    "department": null,
+    "addresses": [
+      "0xF2099c4783921f44Ac988B67e743DAeFd4A00efd"
+    ]
+  },
+  {
+    "name": "Kelp Multisig Proposer EOA",
+    "department": null,
+    "addresses": [
+      "0x477bAB866EAce0437bb57b809D03D34046B2FDc6"
+    ]
+  },
+  {
+    "name": "Stakin",
+    "department": null,
+    "addresses": [
+      "0x08f21e00d9ee3d082cc2a7ccc9c2a5770666e7c2"
+    ]
+  },
+  {
+    "name": "Karan",
+    "department": null,
+    "addresses": [
+      "0xef781de8c56775e60e07b0a0c6a78a5e82c8aff0"
+    ]
+  },
+  {
+    "name": "Yorick",
+    "department": null,
+    "addresses": [
+      "0xecbb058fc429941124a2b8d0984354c3132f536f"
+    ]
+  },
+  {
+    "name": "Stakely Paco Bits",
+    "department": null,
+    "addresses": [
+      "0xa6ed1c21933791179c469a830f641341b7c42e48"
+    ]
+  },
+  {
+    "name": "Richard Galvin",
+    "department": null,
+    "addresses": [
+      "0x278f9565e8f4d12a011c3a9b6c81cce916c626ed"
+    ]
+  },
+  {
+    "name": "Kranthi",
+    "department": null,
+    "addresses": [
+      "0x68258012da3b933a81617fd08c9382a60b87ca98"
+    ]
+  },
+  {
+    "name": "Vidhu",
+    "department": null,
+    "addresses": [
+      "0xcb7b385313fea5120b40b9171c912701112c328f"
+    ]
+  },
+  {
+    "name": "Sid",
+    "department": null,
+    "addresses": [
+      "0x601767c4ba4134cc2e906ea7cf25eab845152a7c"
+    ]
+  },
+  {
+    "name": "Accel",
+    "department": null,
+    "addresses": [
+      "0xd9ba47739e6cb24bd4b670e32cb1440e082688d1"
+    ]
+  },
+  {
+    "name": "CA Aishwary",
+    "department": null,
+    "addresses": [
+      "0xe736dfd4659ee4793e509f7c3a4448b2b3148f02"
+    ]
+  },
+  {
+    "name": "Dulgunn",
+    "department": null,
+    "addresses": [
+      "0xcf00878198d8480bb3e4b784af58d7cb18aa2037"
+    ]
+  },
+  {
+    "name": "Advay",
+    "department": null,
+    "addresses": [
+      "0xf0cc0353004560afe58751e3f088951b06ac7997"
+    ]
+  },
+  {
+    "name": "Emanuel",
+    "department": null,
+    "addresses": [
+      "0xa9de8755facd88fd82894afd2c014c860993042f"
+    ]
+  },
+  {
+    "name": "Aditya Krishnakumar",
+    "department": null,
+    "addresses": [
+      "0x3e75d48e138fc49e382c5a223d5ea5eae374b394"
+    ]
+  },
+  {
+    "name": "John Cairns",
+    "department": null,
+    "addresses": [
+      "0x82c4b61923029bf65e1083fd556246f567d5c7cc"
+    ]
+  },
+  {
+    "name": "Mike",
+    "department": null,
+    "addresses": [
+      "0x61f45f63e06aa0dae039bcfda2c4aab017441ee7"
+    ]
+  },
+  {
+    "name": "Amrit",
+    "department": null,
+    "addresses": [
+      "0x7da5a697980e53ecc137c0f7e96f4cb656130098"
+    ]
+  },
+  {
+    "name": "Lars",
+    "department": null,
+    "addresses": [
+      "0x2198a3188a0dc5526567a5d17b06e466c042d702"
+    ]
+  },
+  {
+    "name": "Hasan",
+    "department": null,
+    "addresses": [
+      "0x956764bad3adf4e5a1daff3b68343a845b3fe45c"
+    ]
+  },
+  {
+    "name": "Rahul",
+    "department": null,
+    "addresses": [
+      "0x592942c2e3e602acc1c72a1753259f0bcb2eb580"
+    ]
+  },
+  {
+    "name": "Pratik Nikam",
+    "department": null,
+    "addresses": [
+      "0xbc9bfd8ee2aaa54e672f98a53b1536e0b3092f87"
+    ]
+  },
+  {
+    "name": "John",
+    "department": null,
+    "addresses": [
+      "0x2e1f5c7f87096fb7fffbb6654fc3b2ce303aeff5"
+    ]
+  }
+]

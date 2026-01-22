@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String   @map("password_hash")
+  isAdmin      Boolean  @default(false) @map("is_admin")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Wallet {
+  id        String   @id @default(uuid())
+  address   String
+  name      String?
+  chainId   Int      @map("chain_id")
+  tag       String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  walletSigners WalletSigner[]
+
+  @@unique([address, chainId])
+  @@map("wallets")
+}
+
+model Signer {
+  id            String           @id @default(uuid())
+  name          String
+  department    String?
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+  addresses     SignerAddress[]
+
+  @@map("signers")
+}
+
+model SignerAddress {
+  id        String   @id @default(uuid())
+  signerId  String   @map("signer_id")
+  address   String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  signer    Signer   @relation(fields: [signerId], references: [id], onDelete: Cascade)
+  walletSigners WalletSigner[]
+
+  @@map("signer_addresses")
+}
+
+model WalletSigner {
+  id              String        @id @default(uuid())
+  walletId        String        @map("wallet_id")
+  signerAddressId String        @map("signer_address_id")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  wallet          Wallet        @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  signerAddress   SignerAddress @relation(fields: [signerAddressId], references: [id], onDelete: Cascade)
+
+  @@unique([walletId, signerAddressId])
+  @@map("wallet_signers")
+}
