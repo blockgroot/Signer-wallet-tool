@@ -21,6 +21,26 @@ function validateAddress(address: string): string | null {
 async function importFromJson() {
   console.log('📦 Importing data from JSON files...\n')
 
+  // Check if DATABASE_URL is set (skip if not available, e.g., during build)
+  if (!process.env.DATABASE_URL) {
+    console.log('⚠️  DATABASE_URL not set, skipping import (likely in build environment)')
+    return
+  }
+
+  // Verify database tables exist by checking if we can query a table
+  try {
+    // Try to query the signers table to verify it exists
+    await prisma.signer.findFirst({ take: 1 })
+  } catch (error: any) {
+    if (error.code === 'P2021' || error.message?.includes('does not exist')) {
+      console.log('⚠️  Database tables do not exist yet. Migrations should run automatically in postbuild.')
+      console.log('⚠️  If this persists, run migrations manually: DATABASE_URL=$PRISMA_DATABASE_URL npm run db:migrate:deploy')
+      return
+    }
+    // If it's a connection error, that's different - let it fail
+    throw error
+  }
+
   const walletsJsonFile = path.join(process.cwd(), 'data', 'wallets.json')
   const signersJsonFile = path.join(process.cwd(), 'data', 'signer.json')
 

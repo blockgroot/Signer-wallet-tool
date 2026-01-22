@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
-    "postbuild": "npm run import:json || echo 'Import skipped (non-fatal)'",
+    "postbuild": "tsx scripts/postbuild-deploy.ts || echo 'Post-build tasks skipped (non-fatal)'",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
