@@ -102,12 +102,23 @@ async function syncFromCSV() {
 
   console.log(`📋 Found ${csvRows.length} addresses in CSV\n`)
 
-  // Separate wallets and signers
-  const wallets = csvRows.filter(r => r.type === 'wallet' && r.chainId !== null)
-  const signers = csvRows.filter(r => r.type === 'signer' || r.chainId === null)
+  // Separate wallets and signers based on name
+  // Only addresses with names containing "safe" or "multisig" are wallets
+  // All others are signer addresses
+  const wallets = csvRows.filter(r => {
+    if (!r.chainId) return false // Must have chainId to be a wallet
+    const name = (r.name || '').toLowerCase()
+    return name.includes('safe') || name.includes('multisig')
+  })
+  
+  const signers = csvRows.filter(r => {
+    if (!r.chainId) return true // No chainId = signer
+    const name = (r.name || '').toLowerCase()
+    return !name.includes('safe') && !name.includes('multisig')
+  })
 
-  console.log(`  Wallets: ${wallets.length}`)
-  console.log(`  Signers: ${signers.length}\n`)
+  console.log(`  Wallets (name contains "safe" or "multisig"): ${wallets.length}`)
+  console.log(`  Signers (all other addresses): ${signers.length}\n`)
 
   // Read existing JSON files
   let existingWallets: any[] = []
@@ -196,35 +207,20 @@ async function syncFromCSV() {
     }
   }
 
-  // Process signers - addresses that appear as names (person names, not wallet names)
+  // Process signers - all addresses that are NOT wallets (don't have "safe" or "multisig" in name)
   console.log('\n👤 Processing signers...\n')
   let signersAdded = 0
   let signersUpdated = 0
 
-  // Identify signer addresses: addresses that appear with person names
-  // (not wallet names like "ETHx Manager", "Kelp Manager", etc.)
-  const walletNameKeywords = ['safe', 'manager', 'multisig', 'wallet', 'ops', 'recovery', 'external', 'internal']
-  const signerAddresses = new Map<string, string>() // address -> name
-
-  for (const row of csvRows) {
-    // If name doesn't contain wallet keywords and looks like a person name, treat as signer
-    const name = row.name?.toLowerCase() || ''
-    const isWalletName = walletNameKeywords.some(keyword => name.includes(keyword))
-    
-    if (!isWalletName && row.name && row.name.length < 50) {
-      // This looks like a person name, add address as signer
-      signerAddresses.set(row.address, row.name)
-    }
-  }
-
   // Group signers by name
   const signersByName = new Map<string, string[]>() // name -> addresses[]
   
-  for (const [address, name] of signerAddresses.entries()) {
+  for (const row of signers) {
+    const name = row.name || 'Unknown'
     if (!signersByName.has(name)) {
       signersByName.set(name, [])
     }
-    signersByName.get(name)!.push(address)
+    signersByName.get(name)!.push(row.address)
   }
 
   for (const [name, addresses] of signersByName.entries()) {
