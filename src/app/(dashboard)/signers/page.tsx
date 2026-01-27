@@ -160,9 +160,6 @@ export default function SignersPage() {
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
                   Department
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
-                  Wallets
-                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
@@ -187,9 +184,6 @@ export default function SignersPage() {
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
                     {row.department || '-'}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
-                    {row.walletCount}
                   </td>
                 </tr>
               ))}

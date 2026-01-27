@@ -187,12 +187,6 @@ export default function WalletsPage() {
                   Network
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
-                  Threshold
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
-                  Signers
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
                   Tags
                 </th>
               </tr>
@@ -230,34 +224,6 @@ export default function WalletsPage() {
                     <td className="whitespace-nowrap px-6 py-4">
                       <ChainBadge chainId={wallet.chainId} />
                     </td>
-                        <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
-                          {wallet.threshold === 0 && wallet.totalSigners === 0 ? (
-                            <span className="text-black italic">View details</span>
-                          ) : (
-                            `${wallet.threshold} / ${wallet.totalSigners}`
-                          )}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-black">
-                          {wallet.signers.length === 0 ? (
-                            <span className="text-black italic">View details</span>
-                          ) : (
-                            <div className="flex flex-wrap gap-1">
-                              {wallet.signers.slice(0, 3).map((signer, idx) => (
-                                <div key={idx} className="flex items-center">
-                                  <span className="font-mono text-xs text-black">
-                                    {signer.address.slice(0, 6)}...{signer.address.slice(-4)}
-                                  </span>
-                                  {signer.name && (
-                                    <span className="ml-1 text-xs text-black">— {signer.name}</span>
-                                  )}
-                                </div>
-                              ))}
-                              {wallet.signers.length > 3 && (
-                                <span className="text-xs text-black">+{wallet.signers.length - 3} more</span>
-                              )}
-                            </div>
-                          )}
-                        </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       <div className="flex flex-wrap gap-1">
                         {tags.length > 0 ? (

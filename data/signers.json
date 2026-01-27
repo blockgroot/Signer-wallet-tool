@@ -80,17 +80,17 @@
     ]
   },
   {
-    "name": "ETHx Manager",
-    "department": null,
-    "addresses": [
-      "0xaafb31780e4b9c95bc920e388f4925a874cd07af"
-    ]
-  },
-  {
     "name": "Gus",
     "department": null,
     "addresses": [
       "0x1f7a03b70c5448dfd0a2c5a7865169253c2c769b"
+    ]
+  },
+  {
+    "name": "ETHx Manager",
+    "department": null,
+    "addresses": [
+      "0xaafb31780e4b9c95bc920e388f4925a874cd07af"
     ]
   },
   {
@@ -101,17 +101,17 @@
     ]
   },
   {
-    "name": "John Cairns",
-    "department": null,
-    "addresses": [
-      "0x82c4b61923029bf65e1083fd556246f567d5c7cc"
-    ]
-  },
-  {
     "name": "Karan",
     "department": null,
     "addresses": [
       "0xef781de8c56775e60e07b0a0c6a78a5e82c8aff0"
+    ]
+  },
+  {
+    "name": "John Cairns",
+    "department": null,
+    "addresses": [
+      "0x82c4b61923029bf65e1083fd556246f567d5c7cc"
     ]
   },
   {
@@ -193,17 +193,17 @@
     ]
   },
   {
-    "name": "Rajath",
-    "department": null,
-    "addresses": [
-      "0xdf83e84f1eb00f0230eb912e2ec823c979800b1c"
-    ]
-  },
-  {
     "name": "Richard Galvin",
     "department": null,
     "addresses": [
       "0x278f9565e8f4d12a011c3a9b6c81cce916c626ed"
+    ]
+  },
+  {
+    "name": "Rajath",
+    "department": null,
+    "addresses": [
+      "0xdf83e84f1eb00f0230eb912e2ec823c979800b1c"
     ]
   },
   {
@@ -215,17 +215,17 @@
     ]
   },
   {
-    "name": "Sidhartha",
-    "department": null,
-    "addresses": [
-      "0x601767c4ba4134cc2e906ea7cf25eab845152a7c"
-    ]
-  },
-  {
     "name": "Stader Ops wallet",
     "department": null,
     "addresses": [
       "0xd5b1321b5bccd0878b50c385e04a42a990ae9c2f"
+    ]
+  },
+  {
+    "name": "Sidhartha",
+    "department": null,
+    "addresses": [
+      "0x601767c4ba4134cc2e906ea7cf25eab845152a7c"
     ]
   },
   {
@@ -236,10 +236,10 @@
     ]
   },
   {
-    "name": "Stakin",
+    "name": "Timo ledger",
     "department": null,
     "addresses": [
-      "0x08f21e00d9ee3d082cc2a7ccc9c2a5770666e7c2"
+      "0x51c59785639cca31c09d0833749e76a5d945c9f3"
     ]
   },
   {
@@ -247,13 +247,6 @@
     "department": null,
     "addresses": [
       "0x5db1955f51f892ce1bbef3ecec8a46b85fe75f27"
-    ]
-  },
-  {
-    "name": "Timo ledger",
-    "department": null,
-    "addresses": [
-      "0x51c59785639cca31c09d0833749e76a5d945c9f3"
     ]
   },
   {
@@ -268,6 +261,13 @@
     "department": null,
     "addresses": [
       "0xecbb058fc429941124a2b8d0984354c3132f536f"
+    ]
+  },
+  {
+    "name": "Stakin",
+    "department": null,
+    "addresses": [
+      "0x08f21e00d9ee3d082cc2a7ccc9c2a5770666e7c2"
     ]
   }
 ]
