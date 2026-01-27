@@ -45,14 +45,18 @@ async function postbuildDeploy() {
   
   // Check if JSON files exist
   const walletsJson = join(process.cwd(), 'data', 'wallets.json')
-  const signersJson = join(process.cwd(), 'data', 'signer.json')
+  const signersJson = join(process.cwd(), 'data', 'signers.json')
+  const signerJson = join(process.cwd(), 'data', 'signer.json') // Legacy file name
   
   console.log(`Checking for JSON files:`)
   console.log(`  wallets.json: ${existsSync(walletsJson) ? '✅ Found' : '❌ Not found'} at ${walletsJson}`)
-  console.log(`  signer.json: ${existsSync(signersJson) ? '✅ Found' : '❌ Not found'} at ${signersJson}`)
+  console.log(`  signers.json: ${existsSync(signersJson) ? '✅ Found' : '❌ Not found'} at ${signersJson}`)
+  if (existsSync(signerJson)) {
+    console.log(`  signer.json: ⚠️  Found (legacy file, will be used as fallback)`)
+  }
   console.log(`  Current working directory: ${process.cwd()}\n`)
   
-  if (!existsSync(walletsJson) && !existsSync(signersJson)) {
+  if (!existsSync(walletsJson) && !existsSync(signersJson) && !existsSync(signerJson)) {
     console.error('❌ No JSON files found in data/ directory!')
     console.error('   Make sure data/ directory is included in your repository and build.')
     console.error('   Check .gitignore and vercel.json configuration.\n')

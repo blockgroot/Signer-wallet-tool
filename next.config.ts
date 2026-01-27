@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   experimental: {
     // This suppresses the proxy warning - middleware.ts is still valid for auth
   },
+  // Ensure data directory is included in build
+  output: 'standalone',
 };
 
 export default nextConfig;

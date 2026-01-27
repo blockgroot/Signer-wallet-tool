@@ -1,0 +1,7 @@
+# Ignore local env files
+.env.local
+.env*.local
+
+# Ignore development files
+*.log
+.DS_Store
