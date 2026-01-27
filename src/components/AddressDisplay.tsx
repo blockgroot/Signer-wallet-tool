@@ -24,11 +24,11 @@ export default function AddressDisplay({
     : `${address.slice(0, 6)}...${address.slice(-4)}`
 
   const addressElement = (
-    <span className={`font-mono text-sm ${className}`}>{displayAddress}</span>
+    <span className={`font-mono text-sm text-black ${className}`}>{displayAddress}</span>
   )
 
   const nameElement = name ? (
-    <span className="ml-2 text-sm text-gray-600">— {name}</span>
+    <span className="ml-2 text-sm text-black">— {name}</span>
   ) : null
 
   if (linkToSigner && signerId) {
@@ -36,7 +36,7 @@ export default function AddressDisplay({
       <div className="flex items-center">
         <Link
           href={`/signers/${signerId}`}
-          className="font-mono text-sm text-indigo-600 hover:text-indigo-900"
+          className="font-mono text-sm text-blue-600 hover:text-blue-800"
         >
           {displayAddress}
         </Link>

@@ -121,7 +121,7 @@ export default function SignersPage() {
       />
 
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Signers Directory</h1>
+        <h1 className="text-3xl font-bold text-black">Signers Directory</h1>
         <button
           onClick={handleAddUser}
           className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
@@ -136,14 +136,14 @@ export default function SignersPage() {
           placeholder="Search by name, department, or address..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+          className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-black placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
         />
       </div>
 
       {loading ? (
-        <div className="py-8 text-center">Loading...</div>
+        <div className="py-8 text-center text-black">Loading...</div>
       ) : filteredSigners.length === 0 ? (
-        <div className="py-8 text-center text-gray-500">
+        <div className="py-8 text-center text-black">
           {search ? 'No signers match your search' : 'No signers found'}
         </div>
       ) : (
@@ -151,16 +151,16 @@ export default function SignersPage() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
                   Address
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
                   Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
                   Department
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
                   Wallets
                 </th>
               </tr>
@@ -180,15 +180,15 @@ export default function SignersPage() {
                   <td className="whitespace-nowrap px-6 py-4">
                     <Link
                       href={`/signers/${row.signerId}`}
-                      className="font-medium text-indigo-600 hover:text-indigo-900"
+                      className="font-medium text-blue-600 hover:text-blue-800"
                     >
                       {row.signerName || 'Unknown'}
                     </Link>
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
                     {row.department || '-'}
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
                     {row.walletCount}
                   </td>
                 </tr>

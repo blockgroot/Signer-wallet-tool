@@ -79,11 +79,11 @@ export default function SignerDetailPage() {
   }
 
   if (loading) {
-    return <div className="py-8 text-center">Loading...</div>
+    return <div className="py-8 text-center text-black">Loading...</div>
   }
 
   if (!signer) {
-    return <div className="py-8 text-center text-gray-500">Signer not found</div>
+    return <div className="py-8 text-center text-black">Signer not found</div>
   }
 
   return (
@@ -96,7 +96,7 @@ export default function SignerDetailPage() {
       />
 
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Signer Details</h1>
+        <h1 className="text-3xl font-bold text-black">Signer Details</h1>
         {isAdmin && (
           <div className="flex gap-2">
             <button
@@ -119,13 +119,13 @@ export default function SignerDetailPage() {
       <div className="mb-6 rounded-lg bg-white p-6 shadow">
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-gray-500">Name</label>
-            <p className="mt-1 text-lg font-semibold text-gray-900">{signer.name}</p>
+            <label className="text-sm font-medium text-black">Name</label>
+            <p className="mt-1 text-lg font-semibold text-black">{signer.name}</p>
           </div>
           {signer.department && (
             <div>
-              <label className="text-sm font-medium text-gray-500">Department</label>
-              <p className="mt-1 text-sm text-gray-900">{signer.department}</p>
+              <label className="text-sm font-medium text-black">Department</label>
+              <p className="mt-1 text-sm text-black">{signer.department}</p>
             </div>
           )}
         </div>
@@ -133,15 +133,15 @@ export default function SignerDetailPage() {
 
       {/* Associated Addresses Section */}
       <div className="mb-6 rounded-lg bg-white p-6 shadow">
-        <h2 className="mb-4 text-xl font-semibold text-gray-900">Associated Addresses</h2>
+        <h2 className="mb-4 text-xl font-semibold text-black">Associated Addresses</h2>
         {signer.addresses.length === 0 ? (
-          <p className="text-gray-500">No addresses found</p>
+          <p className="text-black">No addresses found</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
                     Address
                   </th>
                 </tr>
@@ -168,21 +168,21 @@ export default function SignerDetailPage() {
 
       {/* Multisig Access Section */}
       <div className="rounded-lg bg-white p-6 shadow">
-        <h2 className="mb-4 text-xl font-semibold text-gray-900">Multisig Wallets</h2>
+        <h2 className="mb-4 text-xl font-semibold text-black">Multisig Wallets</h2>
         {signer.wallets.length === 0 ? (
-          <p className="text-gray-500">This signer is not an owner of any wallets</p>
+          <p className="text-black">This signer is not an owner of any wallets</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
                     Wallet
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
                     Network
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
                     Threshold
                   </th>
                 </tr>
@@ -196,7 +196,7 @@ export default function SignerDetailPage() {
                         <div className="flex items-center gap-2">
                           <Link
                             href={`/wallets/${wallet.id}`}
-                            className="font-medium text-indigo-600 hover:text-indigo-900"
+                            className="font-medium text-blue-600 hover:text-blue-800"
                           >
                             {wallet.name || wallet.address.slice(0, 10) + '...'}
                           </Link>
@@ -205,7 +205,7 @@ export default function SignerDetailPage() {
                               href={explorerUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gray-400 hover:text-gray-600"
+                              className="text-black hover:text-gray-600"
                               title="View on block explorer"
                             >
                               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -218,7 +218,7 @@ export default function SignerDetailPage() {
                       <td className="whitespace-nowrap px-6 py-4">
                         <ChainBadge chainId={wallet.chainId} />
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
                         {wallet.threshold} / {wallet.totalSigners}
                       </td>
                     </tr>

@@ -78,11 +78,11 @@ export default function WalletDetailPage() {
   }
 
   if (loading) {
-    return <div className="py-8 text-center">Loading...</div>
+    return <div className="py-8 text-center text-black">Loading...</div>
   }
 
   if (!wallet) {
-    return <div className="py-8 text-center text-gray-500">Wallet not found</div>
+    return <div className="py-8 text-center text-black">Wallet not found</div>
   }
 
   const tags = parseTags(wallet.tag)
@@ -98,7 +98,7 @@ export default function WalletDetailPage() {
       />
 
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Wallet Details</h1>
+        <h1 className="text-3xl font-bold text-black">Wallet Details</h1>
         {isAdmin && (
           <button
             onClick={handleEdit}
@@ -113,19 +113,19 @@ export default function WalletDetailPage() {
       <div className="mb-6 rounded-lg bg-white p-6 shadow">
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-gray-500">Wallet Name</label>
-            <p className="mt-1 text-lg font-semibold text-gray-900">
+            <label className="text-sm font-medium text-black">Wallet Name</label>
+            <p className="mt-1 text-lg font-semibold text-black">
               {wallet.name || 'Unnamed Wallet'}
             </p>
           </div>
           
           <div>
-            <label className="text-sm font-medium text-gray-500">Address</label>
+            <label className="text-sm font-medium text-black">Address</label>
             <div className="mt-1 flex items-center gap-2">
-              <p className="font-mono text-sm text-gray-900">{wallet.address}</p>
+              <p className="font-mono text-sm text-black">{wallet.address}</p>
               <button
                 onClick={copyAddress}
-                className="rounded-md bg-gray-100 px-2 py-1 text-xs text-gray-700 hover:bg-gray-200"
+                className="rounded-md bg-gray-100 px-2 py-1 text-xs text-black hover:bg-gray-200"
                 title="Copy address"
               >
                 Copy
@@ -135,7 +135,7 @@ export default function WalletDetailPage() {
                   href={explorerUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-black hover:text-gray-600"
                   title="View on block explorer"
                 >
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -148,26 +148,26 @@ export default function WalletDetailPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-gray-500">Network</label>
+              <label className="text-sm font-medium text-black">Network</label>
               <div className="mt-1">
                 <ChainBadge chainId={wallet.chainId} />
               </div>
             </div>
             
             <div>
-              <label className="text-sm font-medium text-gray-500">Threshold</label>
+              <label className="text-sm font-medium text-black">Threshold</label>
               <div className="mt-1">
                 {wallet.threshold === 0 && wallet.totalSigners === 0 ? (
                   <div>
-                    <p className="text-lg font-semibold text-gray-400">Live data unavailable</p>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-lg font-semibold text-black">Live data unavailable</p>
+                    <p className="text-xs text-black mt-1">
                       {wallet._apiError 
                         ? `Error: ${wallet._apiError}` 
                         : 'Unable to fetch threshold from Safe API. Check server logs for details.'}
                     </p>
                   </div>
                 ) : (
-                  <p className="text-lg font-semibold text-gray-900">
+                  <p className="text-lg font-semibold text-black">
                     {wallet.threshold} / {wallet.totalSigners}
                   </p>
                 )}
@@ -177,7 +177,7 @@ export default function WalletDetailPage() {
 
           {tags.length > 0 && (
             <div>
-              <label className="text-sm font-medium text-gray-500">Tags</label>
+              <label className="text-sm font-medium text-black">Tags</label>
               <div className="mt-2 flex flex-wrap gap-2">
                 {tags.map((tag, idx) => (
                   <WalletTag key={idx} tag={tag} />
@@ -190,21 +190,21 @@ export default function WalletDetailPage() {
 
       {/* Signers Section */}
       <div className="rounded-lg bg-white p-6 shadow">
-        <h2 className="mb-4 text-xl font-semibold text-gray-900">Signers</h2>
+        <h2 className="mb-4 text-xl font-semibold text-black">Signers</h2>
         {wallet.signers.length === 0 ? (
-          <p className="text-gray-500">No signers found</p>
+          <p className="text-black">No signers found</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
                     Signer Address
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
                     Mapped Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
                     Department
                   </th>
                 </tr>
@@ -220,12 +220,12 @@ export default function WalletDetailPage() {
                         linkToSigner={!!signer.signerId}
                       />
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
                       {signer.signerName || (
-                        <span className="text-gray-400 italic">Unmapped</span>
+                        <span className="text-black italic">Unmapped</span>
                       )}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
                       {signer.department || '-'}
                     </td>
                   </tr>

@@ -21,10 +21,10 @@ export default async function DashboardLayout({
             <div className="flex items-center">
               {session ? (
                 <>
-                  <span className="mr-4 text-sm text-gray-700">
+                  <span className="mr-4 text-sm text-black">
                     {session.username}
                     {session.isAdmin && (
-                      <span className="ml-2 rounded bg-indigo-100 px-2 py-1 text-xs text-indigo-800">
+                      <span className="ml-2 rounded bg-indigo-100 px-2 py-1 text-xs text-black">
                         Admin
                       </span>
                     )}

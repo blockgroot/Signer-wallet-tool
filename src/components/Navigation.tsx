@@ -12,8 +12,8 @@ export default function Navigation() {
         href="/wallets"
         className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium ${
           pathname?.startsWith('/wallets')
-            ? 'border-indigo-500 text-gray-900'
-            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+            ? 'border-indigo-500 text-black'
+            : 'border-transparent text-black hover:border-gray-300 hover:text-gray-800'
         }`}
       >
         Multisig Wallets
@@ -22,8 +22,8 @@ export default function Navigation() {
         href="/signers"
         className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium ${
           pathname?.startsWith('/signers')
-            ? 'border-indigo-500 text-gray-900'
-            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+            ? 'border-indigo-500 text-black'
+            : 'border-transparent text-black hover:border-gray-300 hover:text-gray-800'
         }`}
       >
         Signers

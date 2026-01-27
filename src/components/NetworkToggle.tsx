@@ -15,7 +15,7 @@ export default function NetworkToggle({ selectedChainId, onChainChange }: Networ
         className={`rounded-md px-4 py-2 text-sm font-medium ${
           selectedChainId === null
             ? 'bg-indigo-600 text-white'
-            : 'bg-white text-gray-700 hover:bg-gray-50'
+            : 'bg-white text-black hover:bg-gray-50'
         }`}
       >
         All Networks
@@ -27,7 +27,7 @@ export default function NetworkToggle({ selectedChainId, onChainChange }: Networ
           className={`rounded-md px-4 py-2 text-sm font-medium ${
             selectedChainId === chain.id
               ? 'bg-indigo-600 text-white'
-              : 'bg-white text-gray-700 hover:bg-gray-50'
+              : 'bg-white text-black hover:bg-gray-50'
           }`}
         >
           {chain.name}

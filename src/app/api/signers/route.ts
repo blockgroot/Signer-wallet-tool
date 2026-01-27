@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { getSafesByOwner } from '@/lib/safeApi'
 import { z } from 'zod'
 import { requireAuth } from '@/lib/auth'
 
@@ -36,7 +35,7 @@ export async function GET(request: NextRequest) {
 
     // Transform to address-first structure: one row per address
     // Each address gets its signer's name and department as metadata
-    // Use getSafesByOwner to get accurate wallet counts
+    // Use database counts for wallet counts (live data fetched on detail page)
     const addressRows: Array<{
       id: string
       address: string
@@ -58,28 +57,12 @@ export async function GET(request: NextRequest) {
           continue
         }
 
-        // Get wallet count using getSafesByOwner
-        let walletCount = 0
-        try {
-          const safesByChain = await getSafesByOwner(address.address)
-          // Count total safes across all chains
-          for (const safes of Object.values(safesByChain)) {
-            walletCount += safes.length
-          }
-        } catch (error) {
-          // If API fails, fall back to database count
-          const errorMessage = error instanceof Error ? error.message : String(error)
-          if (errorMessage.includes('SAFE_API_KEY is not set')) {
-            console.error('❌ SAFE_API_KEY is not set - using database count as fallback')
-          }
-          
-          // Fallback to database count
-          walletCount = await db.walletSigner.count({
-            where: {
-              signerAddressId: address.id,
-            },
-          })
-        }
+        // Get wallet count from database (live data fetched on detail page only)
+        const walletCount = await db.walletSigner.count({
+          where: {
+            signerAddressId: address.id,
+          },
+        })
 
         addressRows.push({
           id: address.id,
