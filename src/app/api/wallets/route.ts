@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { getSafeInfo } from '@/lib/safe-service'
+import { getSafeInfo } from '@/lib/safeApi'
 import { z } from 'zod'
 import { requireAuth } from '@/lib/auth'
 
@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
       where.OR = [
         { address: { contains: search, mode: 'insensitive' } },
         { name: { contains: search, mode: 'insensitive' } },
+        { tag: { contains: search, mode: 'insensitive' } },
       ]
     }
 
@@ -34,7 +35,15 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' },
     })
 
-    return NextResponse.json(wallets)
+    // Return wallets without fetching threshold/signers from Safe API
+    // This avoids rate limiting on the dashboard page
+    // Threshold and signers are fetched only on the wallet detail page
+    return NextResponse.json(wallets.map(wallet => ({
+      ...wallet,
+      threshold: 0, // Will be fetched on detail page
+      totalSigners: 0, // Will be fetched on detail page
+      signers: [], // Will be fetched on detail page
+    })))
   } catch (error) {
     console.error('Get wallets error:', error)
     return NextResponse.json(

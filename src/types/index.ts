@@ -10,6 +10,7 @@ export interface WalletWithDetails {
   signers: SignerWithAddress[]
   createdAt: Date
   updatedAt: Date
+  _apiError?: string // Internal flag for API errors (not exposed to client)
 }
 
 export interface SignerWithAddress {

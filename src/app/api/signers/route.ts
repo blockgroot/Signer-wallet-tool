@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { getSafeInfo } from '@/lib/safe-service'
+import { getSafesByOwner } from '@/lib/safeApi'
 import { z } from 'zod'
 import { requireAuth } from '@/lib/auth'
 
@@ -34,7 +34,68 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' },
     })
 
-    return NextResponse.json(signers)
+    // Transform to address-first structure: one row per address
+    // Each address gets its signer's name and department as metadata
+    // Use getSafesByOwner to get accurate wallet counts
+    const addressRows: Array<{
+      id: string
+      address: string
+      signerId: string
+      signerName: string
+      department: string | null
+      walletCount: number
+    }> = []
+
+    for (const signer of signers) {
+      // Create one row per address
+      for (const address of signer.addresses) {
+        // Validate address format
+        if (!address.address || !/^0x[a-fA-F0-9]{40}$/.test(address.address)) {
+          // Skip invalid addresses
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(`Skipping invalid address: ${address.address} for signer ${signer.name}`)
+          }
+          continue
+        }
+
+        // Get wallet count using getSafesByOwner
+        let walletCount = 0
+        try {
+          const safesByChain = await getSafesByOwner(address.address)
+          // Count total safes across all chains
+          for (const safes of Object.values(safesByChain)) {
+            walletCount += safes.length
+          }
+        } catch (error) {
+          // If API fails, fall back to database count
+          const errorMessage = error instanceof Error ? error.message : String(error)
+          if (errorMessage.includes('SAFE_API_KEY is not set')) {
+            console.error('❌ SAFE_API_KEY is not set - using database count as fallback')
+          }
+          
+          // Fallback to database count
+          walletCount = await db.walletSigner.count({
+            where: {
+              signerAddressId: address.id,
+            },
+          })
+        }
+
+        addressRows.push({
+          id: address.id,
+          address: address.address.toLowerCase(),
+          signerId: signer.id,
+          signerName: signer.name,
+          department: signer.department,
+          walletCount,
+        })
+      }
+    }
+
+    // Sort by address for consistent ordering
+    addressRows.sort((a, b) => a.address.localeCompare(b.address))
+
+    return NextResponse.json(addressRows)
   } catch (error) {
     console.error('Get signers error:', error)
     return NextResponse.json(

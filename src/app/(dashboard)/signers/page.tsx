@@ -3,28 +3,37 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import AddressDisplay from '@/components/AddressDisplay'
+import LoginModal from '@/components/LoginModal'
+import AddUserModal from '@/components/AddUserModal'
 
-interface Signer {
+interface SignerRow {
   id: string
-  name: string
+  address: string
+  signerId: string
+  signerName: string
   department: string | null
-  addresses: Array<{
-    id: string
-    address: string
-  }>
+  walletCount: number
 }
 
 export default function SignersPage() {
   const router = useRouter()
-  const [signers, setSigners] = useState<Signer[]>([])
+  const [signers, setSigners] = useState<SignerRow[]>([])
+  const [filteredSigners, setFilteredSigners] = useState<SignerRow[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [isAdmin, setIsAdmin] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [showAddUserModal, setShowAddUserModal] = useState(false)
 
   useEffect(() => {
     loadSigners()
     loadSession()
-  }, [search])
+  }, [])
+
+  useEffect(() => {
+    filterSigners()
+  }, [search, signers])
 
   const loadSession = async () => {
     try {
@@ -41,13 +50,7 @@ export default function SignersPage() {
   const loadSigners = async () => {
     setLoading(true)
     try {
-      const params = new URLSearchParams()
-      if (search) {
-        params.append('search', search)
-      }
-
-      const response = await fetch(`/api/signers?${params.toString()}`)
-      // Public access - no auth required for viewing
+      const response = await fetch('/api/signers')
       if (!response.ok) {
         console.error('Failed to fetch signers:', response.statusText)
         return
@@ -55,6 +58,7 @@ export default function SignersPage() {
 
       const data = await response.json()
       setSigners(data)
+      setFilteredSigners(data)
     } catch (error) {
       console.error('Failed to load signers:', error)
     } finally {
@@ -62,29 +66,74 @@ export default function SignersPage() {
     }
   }
 
+  const filterSigners = () => {
+    if (!search.trim()) {
+      setFilteredSigners(signers)
+      return
+    }
+
+    const searchLower = search.toLowerCase().trim()
+    const filtered = signers.filter((row) => {
+      // Search by address (primary)
+      if (row.address.toLowerCase().includes(searchLower)) return true
+      
+      // Search by name
+      if (row.signerName.toLowerCase().includes(searchLower)) return true
+      
+      // Search by department
+      if (row.department?.toLowerCase().includes(searchLower)) return true
+      
+      return false
+    })
+    
+    setFilteredSigners(filtered)
+  }
+
   const handleAddUser = () => {
-    // TODO: Open add user modal
-    alert('Add user functionality coming soon')
+    if (!isAdmin) {
+      setShowLoginModal(true)
+      return
+    }
+    setShowAddUserModal(true)
+  }
+
+  const handleLoginSuccess = () => {
+    loadSession()
+  }
+
+  const handleAddUserSuccess = () => {
+    loadSigners() // Refresh the signer list
   }
 
   return (
     <div>
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccess={handleLoginSuccess}
+        message="You need to login to add a new user mapping."
+      />
+
+      <AddUserModal
+        isOpen={showAddUserModal}
+        onClose={() => setShowAddUserModal(false)}
+        onSuccess={handleAddUserSuccess}
+      />
+
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Signers</h1>
-        {isAdmin && (
-          <button
-            onClick={handleAddUser}
-            className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-          >
-            Add User
-          </button>
-        )}
+        <h1 className="text-3xl font-bold text-gray-900">Signers Directory</h1>
+        <button
+          onClick={handleAddUser}
+          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+        >
+          Add User
+        </button>
       </div>
 
       <div className="mb-4">
         <input
           type="text"
-          placeholder="Search by name or address..."
+          placeholder="Search by name, department, or address..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
@@ -93,11 +142,13 @@ export default function SignersPage() {
 
       {loading ? (
         <div className="py-8 text-center">Loading...</div>
-      ) : signers.length === 0 ? (
-        <div className="py-8 text-center text-gray-500">No signers found</div>
+      ) : filteredSigners.length === 0 ? (
+        <div className="py-8 text-center text-gray-500">
+          {search ? 'No signers match your search' : 'No signers found'}
+        </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 bg-white shadow">
+        <div className="overflow-x-auto rounded-lg bg-white shadow">
+          <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -109,29 +160,39 @@ export default function SignersPage() {
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Department
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  Wallets
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
-              {signers.map((signer) =>
-                signer.addresses.map((address, idx) => (
-                  <tr key={`${signer.id}-${address.id}`} className="hover:bg-gray-50">
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <Link
-                        href={`/signers/${signer.id}`}
-                        className="font-mono text-sm text-indigo-600 hover:text-indigo-900"
-                      >
-                        {address.address}
-                      </Link>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                      {idx === 0 ? signer.name : ''}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                      {idx === 0 ? signer.department || '-' : ''}
-                    </td>
-                  </tr>
-                ))
-              )}
+              {filteredSigners.map((row) => (
+                <tr key={row.id} className="hover:bg-gray-50">
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <AddressDisplay
+                      address={row.address}
+                      name={null}
+                      signerId={row.signerId}
+                      linkToSigner={true}
+                      showFull={false}
+                    />
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <Link
+                      href={`/signers/${row.signerId}`}
+                      className="font-medium text-indigo-600 hover:text-indigo-900"
+                    >
+                      {row.signerName || 'Unknown'}
+                    </Link>
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                    {row.department || '-'}
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                    {row.walletCount}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

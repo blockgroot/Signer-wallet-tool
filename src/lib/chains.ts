@@ -90,6 +90,12 @@ export const SUPPORTED_CHAINS: Chain[] = [
     safeApiUrl: 'https://safe-transaction-scroll.safe.global',
     explorerUrl: 'https://scrollscan.com',
   },
+  {
+    id: 11155111,
+    name: 'Sepolia',
+    safeApiUrl: 'https://safe-transaction-sepolia.safe.global',
+    explorerUrl: 'https://sepolia.etherscan.io',
+  },
 ]
 
 export function getChainById(chainId: number): Chain | undefined {

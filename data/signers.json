@@ -1,0 +1,266 @@
+[
+  {
+    "address": "0x75db63125a4f04e59a1a2ab4acc4fc1cd5daddd5",
+    "name": "Members Dheeraj - Co-Founder at Stader",
+    "role": "Co-Founder",
+    "source": "signer_list"
+  },
+  {
+    "address": "0x601767c4ba4134cc2e906ea7cf25eab845152a7c",
+    "name": "Sidhartha - Co-founder at Mira",
+    "role": "Co-Founder",
+    "source": "signer_list"
+  },
+  {
+    "address": "0xd9ba47739e6cb24bd4b670e32cb1440e082688d1",
+    "name": "Accel Partners - Venture Capital Firm",
+    "role": "Investor",
+    "source": "signer_list"
+  },
+  {
+    "address": "0xe736dfd4659ee4793e509f7c3a4448b2b3148f02",
+    "name": "CA Aishwary - Head - India & Payment & Global Head - FinTech & Payments at Polygon",
+    "role": "Team",
+    "source": "signer_list"
+  },
+  {
+    "address": "0xdf83e84f1eb00f0230eb912e2ec823c979800b1c",
+    "name": "Rajath",
+    "role": "Unknown",
+    "source": "signer_list"
+  },
+  {
+    "address": "0x1f7a03b70c5448dfd0a2c5a7865169253c2c769b",
+    "name": "Gus",
+    "role": "Unknown",
+    "source": "signer_list"
+  },
+  {
+    "address": "0x7aad74b7f0d60d5867b59dbd377a71783425af47",
+    "name": "Dheeraj (Account 1)",
+    "role": "Unknown",
+    "source": "signer_list"
+  },
+  {
+    "address": "0x51c59785639cca31c09d0833749e76a5d945c9f3",
+    "name": "Timo (Ledger)",
+    "role": "Team",
+    "source": "signer_list"
+  },
+  {
+    "address": "0x5db1955f51f892ce1bbef3ecec8a46b85fe75f27",
+    "name": "Timo (Hot Wallet)",
+    "role": "Team",
+    "source": "signer_list"
+  },
+  {
+    "address": "0x746d6a9f789999799ae7f5d62aa70422f86826b6",
+    "name": "Amit",
+    "role": "Unknown",
+    "source": "signer_list"
+  },
+  {
+    "address": "0x268da1016634e06f17f11cf584c5ddf1c44787eb",
+    "name": "Saurabh",
+    "role": "Unknown",
+    "source": "signer_list"
+  },
+  {
+    "address": "0x0e4b97563723ef7f0a7fde4c7bd3b17a5bf63fbf",
+    "name": "Manoj",
+    "role": "Unknown",
+    "source": "signer_list"
+  },
+  {
+    "address": "0x86cbbaeb08861d005fd2147a5123e43e558db167",
+    "name": "Punit",
+    "role": "Unknown",
+    "source": "signer_list"
+  },
+  {
+    "address": "0xcf7bf9d3a485b9c4d4a38d65e4d68e081a585662",
+    "name": "Mihailo (Hot Wallet)",
+    "role": "Team",
+    "source": "signer_list"
+  },
+  {
+    "address": "0xfcc1c98f887c93c38deb5e38a6fb820ad3fb9dfd",
+    "name": "Mihailo (Hardware Wallet)",
+    "role": "Team",
+    "source": "signer_list"
+  },
+  {
+    "address": "0x956764bad3adf4e5a1daff3b68343a845b3fe45c",
+    "name": "Crash (Hassan)",
+    "role": "Unknown",
+    "source": "signer_list"
+  },
+  {
+    "address": "0xa2a4a1cb7ab2d6e5aae489572ea4d23e649db11d",
+    "name": "Batphonghan",
+    "role": "Unknown",
+    "source": "signer_list"
+  },
+  {
+    "address": "0xf2099c4783921f44ac988b67e743daefd4a00efd",
+    "name": "Kelp Operator EOA",
+    "role": "Team",
+    "source": "signer_list"
+  },
+  {
+    "address": "0x477bab866eace0437bb57b809d03d34046b2fdc6",
+    "name": "Kelp Multisig Proposer EOA",
+    "role": "Team",
+    "source": "signer_list"
+  },
+  {
+    "address": "0xaafb31780e4b9c95bc920e388f4925a874cd07af",
+    "name": "ETHx Manager",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0x08f21e00d9ee3d082cc2a7ccc9c2a5770666e7c2",
+    "name": "Stakin",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0xef781de8c56775e60e07b0a0c6a78a5e82c8aff0",
+    "name": "Karan",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0xecbb058fc429941124a2b8d0984354c3132f536f",
+    "name": "Yorick",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0xc6160f5bc3c673ac390f11c492e8ed0d0693579a",
+    "name": "Dheeraj",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0xa6ed1c21933791179c469a830f641341b7c42e48",
+    "name": "Stakely Paco Bits",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0x278f9565e8f4d12a011c3a9b6c81cce916c626ed",
+    "name": "Richard Galvin",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0xcbcdd778aa25476f203814214dd3e9b9c46829a1",
+    "name": "Kelp Manager",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0x68258012da3b933a81617fd08c9382a60b87ca98",
+    "name": "Kranthi",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0x374ac9ef5aa496440a5b3a3d3abb9dece7400d89",
+    "name": "Manoj",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0xcb7b385313fea5120b40b9171c912701112c328f",
+    "name": "Vidhu",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0xd5b1321b5bccd0878b50c385e04a42a990ae9c2f",
+    "name": "Stader Ops wallet",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0xb8ffad4020c76f9fe9b49c68b417fd8cb4c20516",
+    "name": "Saurabh Analytics",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0xcf00878198d8480bb3e4b784af58d7cb18aa2037",
+    "name": "Dulgunn",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0xf0cc0353004560afe58751e3f088951b06ac7997",
+    "name": "Advay",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0xa9de8755facd88fd82894afd2c014c860993042f",
+    "name": "Emanuel",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0x3e75d48e138fc49e382c5a223d5ea5eae374b394",
+    "name": "Aditya Krishnakumar",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0x82c4b61923029bf65e1083fd556246f567d5c7cc",
+    "name": "John Cairns",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0x61f45f63e06aa0dae039bcfda2c4aab017441ee7",
+    "name": "Mike",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0x7da5a697980e53ecc137c0f7e96f4cb656130098",
+    "name": "Amrit",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0x2198a3188a0dc5526567a5d17b06e466c042d702",
+    "name": "Lars",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0x592942c2e3e602acc1c72a1753259f0bcb2eb580",
+    "name": "Rahul",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0x8e0a538081ba1d7f41b7c594f0a2afe7ae558494",
+    "name": "Dheeraj",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0xbc9bfd8ee2aaa54e672f98a53b1536e0b3092f87",
+    "name": "Pratik Nikam",
+    "role": "Unknown",
+    "source": "csv"
+  },
+  {
+    "address": "0x2e1f5c7f87096fb7fffbb6654fc3b2ce303aeff5",
+    "name": "John",
+    "role": "Unknown",
+    "source": "csv"
+  }
+]

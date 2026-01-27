@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import ChainBadge from '@/components/ChainBadge'
+import AddressDisplay from '@/components/AddressDisplay'
+import LoginModal from '@/components/LoginModal'
+import { getExplorerUrl } from '@/lib/utils'
 import type { SignerWithWallets } from '@/types'
 
 export default function SignerDetailPage() {
@@ -14,6 +17,7 @@ export default function SignerDetailPage() {
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false)
 
   useEffect(() => {
     loadSigner()
@@ -36,7 +40,6 @@ export default function SignerDetailPage() {
     setLoading(true)
     try {
       const response = await fetch(`/api/signers/${signerId}`)
-      // Public access - no auth required for viewing
       if (response.status === 404) {
         router.push('/signers')
         return
@@ -55,12 +58,24 @@ export default function SignerDetailPage() {
   }
 
   const handleEdit = () => {
+    if (!isAdmin) {
+      setShowLoginModal(true)
+      return
+    }
     setShowEditModal(true)
   }
 
   const handleAddAddress = () => {
+    if (!isAdmin) {
+      setShowLoginModal(true)
+      return
+    }
     // TODO: Open add address modal
     alert('Add address functionality coming soon')
+  }
+
+  const handleLoginSuccess = () => {
+    loadSession()
   }
 
   if (loading) {
@@ -73,6 +88,13 @@ export default function SignerDetailPage() {
 
   return (
     <div>
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccess={handleLoginSuccess}
+        message="You need to login to edit signer details."
+      />
+
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900">Signer Details</h1>
         {isAdmin && (
@@ -93,11 +115,12 @@ export default function SignerDetailPage() {
         )}
       </div>
 
-      <div className="rounded-lg bg-white p-6 shadow">
+      {/* Header Section */}
+      <div className="mb-6 rounded-lg bg-white p-6 shadow">
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-500">Name</label>
-            <p className="mt-1 text-lg text-gray-900">{signer.name}</p>
+            <p className="mt-1 text-lg font-semibold text-gray-900">{signer.name}</p>
           </div>
           {signer.department && (
             <div>
@@ -108,25 +131,43 @@ export default function SignerDetailPage() {
         </div>
       </div>
 
-      <div className="mt-6 rounded-lg bg-white p-6 shadow">
+      {/* Associated Addresses Section */}
+      <div className="mb-6 rounded-lg bg-white p-6 shadow">
         <h2 className="mb-4 text-xl font-semibold text-gray-900">Associated Addresses</h2>
         {signer.addresses.length === 0 ? (
           <p className="text-gray-500">No addresses found</p>
         ) : (
-          <div className="space-y-2">
-            {signer.addresses.map((address) => (
-              <div
-                key={address.id}
-                className="rounded-md border border-gray-200 p-3 font-mono text-sm"
-              >
-                {address.address}
-              </div>
-            ))}
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Address
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {signer.addresses.map((address) => (
+                  <tr key={address.id} className="hover:bg-gray-50">
+                    <td className="whitespace-nowrap px-6 py-4">
+                      <AddressDisplay
+                        address={address.address}
+                        name={signer.name}
+                        signerId={signer.id}
+                        showFull={true}
+                        linkToSigner={false}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
 
-      <div className="mt-6 rounded-lg bg-white p-6 shadow">
+      {/* Multisig Access Section */}
+      <div className="rounded-lg bg-white p-6 shadow">
         <h2 className="mb-4 text-xl font-semibold text-gray-900">Multisig Wallets</h2>
         {signer.wallets.length === 0 ? (
           <p className="text-gray-500">This signer is not an owner of any wallets</p>
@@ -144,33 +185,45 @@ export default function SignerDetailPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Threshold
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    Tag
-                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {signer.wallets.map((wallet) => (
-                  <tr key={wallet.id} className="hover:bg-gray-50">
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <Link
-                        href={`/wallets/${wallet.id}`}
-                        className="font-mono text-sm text-indigo-600 hover:text-indigo-900"
-                      >
-                        {wallet.name || wallet.address}
-                      </Link>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <ChainBadge chainId={wallet.chainId} />
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                      {wallet.threshold} / {wallet.totalSigners}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                      {wallet.tag || '-'}
-                    </td>
-                  </tr>
-                ))}
+                {signer.wallets.map((wallet) => {
+                  const explorerUrl = getExplorerUrl(wallet.address, wallet.chainId)
+                  return (
+                    <tr key={wallet.id} className="hover:bg-gray-50">
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <Link
+                            href={`/wallets/${wallet.id}`}
+                            className="font-medium text-indigo-600 hover:text-indigo-900"
+                          >
+                            {wallet.name || wallet.address.slice(0, 10) + '...'}
+                          </Link>
+                          {explorerUrl && (
+                            <a
+                              href={explorerUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-gray-400 hover:text-gray-600"
+                              title="View on block explorer"
+                            >
+                              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                            </a>
+                          )}
+                        </div>
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <ChainBadge chainId={wallet.chainId} />
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                        {wallet.threshold} / {wallet.totalSigners}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>

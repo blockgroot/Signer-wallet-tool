@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { getSafeInfo } from '@/lib/safe-service'
+import { getSafeInfo } from '@/lib/safeApi'
 import { z } from 'zod'
 import { requireAuth } from '@/lib/auth'
 import type { WalletWithDetails } from '@/types'
@@ -39,11 +39,45 @@ export async function GET(
 
     // Fetch fresh data from Safe API
     let safeInfo
+    let apiError: string | null = null
+    
     try {
       safeInfo = await getSafeInfo(wallet.address, wallet.chainId)
+      
+      // Log threshold for debugging
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Fetched Safe info for ${wallet.address}: threshold=${safeInfo.threshold}, owners=${safeInfo.owners.length}`)
+      }
     } catch (error) {
-      console.error('Failed to fetch safe info:', error)
-      // Continue with stored data if API fails
+      // Log error details
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      apiError = errorMessage
+      
+      // Check if it's an API key error
+      if (errorMessage.includes('SAFE_API_KEY is not set')) {
+        console.error('❌ SAFE_API_KEY is not set in environment variables')
+        // Don't continue with default values if API key is missing
+        return NextResponse.json(
+          { error: 'Safe API configuration error. Please contact administrator.' },
+          { status: 500 }
+        )
+      }
+      
+      // Log as warning for expected cases, error for unexpected
+      if (
+        errorMessage.includes('not a Safe wallet') ||
+        errorMessage.includes('not found') ||
+        errorMessage.includes('Rate limited') ||
+        errorMessage.includes('Unsupported chain')
+      ) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`Wallet ${wallet.address} on chain ${wallet.chainId}: ${errorMessage}`)
+        }
+      } else {
+        console.error('Failed to fetch safe info:', error)
+      }
+      
+      // Only use default values if it's an expected error (not API key issue)
       safeInfo = {
         address: wallet.address,
         threshold: 0,
@@ -105,6 +139,8 @@ export async function GET(
       signers,
       createdAt: wallet.createdAt,
       updatedAt: wallet.updatedAt,
+      // Include API error flag for UI to show fallback message
+      _apiError: apiError || undefined,
     }
 
     return NextResponse.json(walletWithDetails)
