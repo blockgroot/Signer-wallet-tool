@@ -4,8 +4,9 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
-  const username = process.env.ADMIN_USERNAME || 'admin'
-  const password = process.env.ADMIN_PASSWORD || 'admin123'
+  // Hardcoded admin credentials as per requirements
+  const username = 'stader'
+  const password = 's2t1'
 
   const passwordHash = await bcrypt.hash(password, 10)
 

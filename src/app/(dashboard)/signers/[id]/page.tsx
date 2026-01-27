@@ -6,6 +6,7 @@ import Link from 'next/link'
 import ChainBadge from '@/components/ChainBadge'
 import AddressDisplay from '@/components/AddressDisplay'
 import LoginModal from '@/components/LoginModal'
+import EditSignerModal from '@/components/EditSignerModal'
 import { getExplorerUrl } from '@/lib/utils'
 import type { SignerWithWallets } from '@/types'
 
@@ -65,6 +66,35 @@ export default function SignerDetailPage() {
     setShowEditModal(true)
   }
 
+  const handleDelete = async () => {
+    if (!isAdmin) {
+      setShowLoginModal(true)
+      return
+    }
+
+    if (!confirm(`Are you sure you want to delete signer ${signer?.name}? This action cannot be undone.`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/signers/${signerId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        alert(data.error || 'Failed to delete signer')
+        return
+      }
+
+      // Redirect to signers dashboard
+      router.push('/signers')
+    } catch (error) {
+      console.error('Failed to delete signer:', error)
+      alert('An error occurred while deleting the signer')
+    }
+  }
+
   const handleAddAddress = () => {
     if (!isAdmin) {
       setShowLoginModal(true)
@@ -76,6 +106,10 @@ export default function SignerDetailPage() {
 
   const handleLoginSuccess = () => {
     loadSession()
+  }
+
+  const handleEditSuccess = () => {
+    loadSigner() // Refresh signer data
   }
 
   if (loading) {
@@ -95,6 +129,15 @@ export default function SignerDetailPage() {
         message="You need to login to edit signer details."
       />
 
+      {signer && (
+        <EditSignerModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onSuccess={handleEditSuccess}
+          signer={signer}
+        />
+      )}
+
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-bold text-black">Signer Details</h1>
         {isAdmin && (
@@ -110,6 +153,12 @@ export default function SignerDetailPage() {
               className="rounded-md bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
             >
               Add Address
+            </button>
+            <button
+              onClick={handleDelete}
+              className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+            >
+              Delete
             </button>
           </div>
         )}

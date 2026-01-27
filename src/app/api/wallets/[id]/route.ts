@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSafeInfo } from '@/lib/safeApi'
+import { syncWalletsToJson } from '@/lib/json-sync'
 import { z } from 'zod'
 import { requireAuth } from '@/lib/auth'
 import type { WalletWithDetails } from '@/types'
 
 const updateWalletSchema = z.object({
   name: z.string().optional(),
+  chainId: z.number().int().positive().optional(),
   tag: z.string().optional(),
 })
 
@@ -174,15 +176,24 @@ export async function PUT(
 
     const { id } = await params
     const body = await request.json()
-    const { name, tag } = updateWalletSchema.parse(body)
+    const { name, chainId, tag } = updateWalletSchema.parse(body)
 
     const wallet = await db.wallet.update({
       where: { id },
       data: {
         ...(name !== undefined && { name: name || null }),
+        ...(chainId !== undefined && { chainId }),
         ...(tag !== undefined && { tag: tag || null }),
       },
     })
+
+    // Sync to JSON file
+    try {
+      await syncWalletsToJson()
+    } catch (error) {
+      console.error('Failed to sync wallets to JSON:', error)
+      // Don't fail the request if JSON sync fails
+    }
 
     return NextResponse.json(wallet)
   } catch (error) {
@@ -218,6 +229,14 @@ export async function DELETE(
     await db.wallet.delete({
       where: { id },
     })
+
+    // Sync to JSON file
+    try {
+      await syncWalletsToJson()
+    } catch (error) {
+      console.error('Failed to sync wallets to JSON:', error)
+      // Don't fail the request if JSON sync fails
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {

@@ -1,317 +1,284 @@
 [
   {
-    "address": "0x96d97d66d4290c9182a09470a5775ff90daf922c",
-    "chain": "arb1",
-    "chainId": 42161,
-    "name": null,
-    "source": "metadata"
-  },
-  {
-    "address": "0xd4481d595d99e2ba0e3edfbd65fbb79be50dac5b",
-    "chain": "arb1",
-    "chainId": 42161,
-    "name": null,
-    "source": "metadata"
+    "address": "0x80a43dd35382c4919991c5bca7f46dd24fde4c67",
+    "name": "MaticX internal multisig",
+    "chainId": 1,
+    "network": "eth"
   },
   {
     "address": "0xe85f0d083d0cd18485e531c1a8b8a05ad2c0308f",
-    "chain": "arb1",
-    "chainId": 42161,
     "name": "Superior Arbitrum Safe",
-    "source": "metadata"
+    "chainId": 42161,
+    "network": "arb1"
+  },
+  {
+    "address": "0x96d97d66d4290c9182a09470a5775ff90daf922c",
+    "name": null,
+    "chainId": 42161,
+    "network": "arb1"
+  },
+  {
+    "address": "0xd4481d595d99e2ba0e3edfbd65fbb79be50dac5b",
+    "name": null,
+    "chainId": 42161,
+    "network": "arb1"
   },
   {
     "address": "0xb2bb1425514ab5903be6bbdb6b44958e71103561",
-    "chain": "avax",
-    "chainId": 43114,
     "name": null,
-    "source": "metadata"
+    "chainId": 43114,
+    "network": "avax"
   },
   {
     "address": "0xf268892af58a4ee3232ca41fe138344d53a15059",
-    "chain": "avax",
-    "chainId": 43114,
     "name": null,
-    "source": "metadata"
+    "chainId": 43114,
+    "network": "avax"
   },
   {
     "address": "0x7da95539762dd11005889f6b72a6674a4888b56d",
-    "chain": "base",
-    "chainId": 8453,
     "name": null,
-    "source": "metadata"
+    "chainId": 8453,
+    "network": "base"
   },
   {
     "address": "0x7ac1ce0cb6a7c6ef59c2f95a859e316960fdc18c",
-    "chain": "berachain",
-    "chainId": 80094,
     "name": null,
-    "source": "metadata"
+    "chainId": 80094,
+    "network": "berachain"
   },
   {
     "address": "0xee68df9f661da6ed968ea4cbf7ec68fcfe375bc6",
-    "chain": "blast",
-    "chainId": 81457,
     "name": null,
-    "source": "metadata"
+    "chainId": 81457,
+    "network": "blast"
   },
   {
     "address": "0x2366c3830a9e1fbb5ea0b6bc4bb9717a8f2b8490",
-    "chain": "bnb",
-    "chainId": 56,
     "name": "kernel airdrop",
-    "source": "metadata"
+    "chainId": 56,
+    "network": "bnb"
   },
   {
     "address": "0x40f5f0f5e78289b33e450fbca1cbd8700098cd23",
-    "chain": "bnb",
-    "chainId": 56,
     "name": null,
-    "source": "metadata"
+    "chainId": 56,
+    "network": "bnb"
   },
   {
     "address": "0x762966a8f4f4ed9016f8651b352e9435ce733b67",
-    "chain": "bnb",
-    "chainId": 56,
     "name": null,
-    "source": "metadata"
+    "chainId": 56,
+    "network": "bnb"
   },
   {
     "address": "0x79a2ae748ac8be4118b7a8096681b30310c3adbe",
-    "chain": "bnb",
-    "chainId": 56,
     "name": "BNBx Manager Role",
-    "source": "metadata"
+    "chainId": 56,
+    "network": "bnb"
   },
   {
     "address": "0x845c3db355f7beca27ac8b4652517f8594369261",
-    "chain": "bnb",
-    "chainId": 56,
     "name": null,
-    "source": "metadata"
+    "chainId": 56,
+    "network": "bnb"
   },
   {
     "address": "0x85dfbf5a7c26da08406b792e673d847755498bc8",
-    "chain": "bnb",
-    "chainId": 56,
     "name": null,
-    "source": "metadata"
+    "chainId": 56,
+    "network": "bnb"
   },
   {
     "address": "0x881fe09b89f8dd5186f195cc454104af7ab59d48",
-    "chain": "bnb",
-    "chainId": 56,
     "name": null,
-    "source": "metadata"
+    "chainId": 56,
+    "network": "bnb"
   },
   {
     "address": "0xb3696a817d01c8623e66d156b6798291fa10a46d",
-    "chain": "bnb",
-    "chainId": 56,
     "name": null,
-    "source": "metadata"
+    "chainId": 56,
+    "network": "bnb"
   },
   {
     "address": "0xb4222155cdb309ecee1ba64d56c8bab0475a95b0",
-    "chain": "bnb",
-    "chainId": 56,
     "name": null,
-    "source": "metadata"
+    "chainId": 56,
+    "network": "bnb"
   },
   {
     "address": "0x4e9096741c99d035f60abaebde8a35c3139a6eb9",
-    "chain": "eth",
-    "chainId": 1,
     "name": null,
-    "source": "metadata"
+    "chainId": 1,
+    "network": "eth"
   },
   {
     "address": "0x729f22bf83110b837b0f16aebbca33bb961cb901",
-    "chain": "eth",
-    "chainId": 1,
     "name": null,
-    "source": "metadata"
-  },
-  {
-    "address": "0x80a43dd35382c4919991c5bca7f46dd24fde4c67",
-    "chain": "eth",
     "chainId": 1,
-    "name": "MaticX internal multisig",
-    "source": "metadata"
+    "network": "eth"
   },
   {
     "address": "0x87ff94bb7709c70c6b2018fed12e4ce0abbf30ce",
-    "chain": "eth",
-    "chainId": 1,
     "name": null,
-    "source": "metadata"
+    "chainId": 1,
+    "network": "eth"
   },
   {
     "address": "0xb9577e83a6d9a6de35047aa066e3758221fe0da2",
-    "chain": "eth",
-    "chainId": 1,
     "name": null,
-    "source": "metadata"
+    "chainId": 1,
+    "network": "eth"
   },
   {
     "address": "0xc8ef93b3cf2f0784e8c668458f8b7bd5bb189169",
-    "chain": "eth",
-    "chainId": 1,
     "name": null,
-    "source": "metadata"
+    "chainId": 1,
+    "network": "eth"
   },
   {
     "address": "0xcbcdd778aa25476f203814214dd3e9b9c46829a1",
-    "chain": "eth",
-    "chainId": 1,
     "name": null,
-    "source": "metadata"
+    "chainId": 1,
+    "network": "eth"
   },
   {
     "address": "0xee68df9f661da6ed968ea4cbf7ec68fcfe375bc6",
-    "chain": "eth",
-    "chainId": 1,
     "name": null,
-    "source": "metadata"
+    "chainId": 1,
+    "network": "eth"
   },
   {
     "address": "0xc58dba139e376ae06270b3b466974c50b0f66d2d",
-    "chain": "hyper-evm",
-    "chainId": 999,
     "name": null,
-    "source": "metadata"
+    "chainId": 999,
+    "network": "chain-999"
   },
   {
     "address": "0x7a1112494843d0228bffba13ef3ce57f4c35a461",
-    "chain": "ink",
-    "chainId": 57073,
     "name": null,
-    "source": "metadata"
+    "chainId": 57073,
+    "network": "ink"
   },
   {
     "address": "0xee68df9f661da6ed968ea4cbf7ec68fcfe375bc6",
-    "chain": "linea",
-    "chainId": 59144,
     "name": null,
-    "source": "metadata"
+    "chainId": 59144,
+    "network": "linea"
   },
   {
     "address": "0x51358004cfe135e64453d7f6a0dc433caba09a2a",
-    "chain": "matic",
-    "chainId": 137,
     "name": "maticx childPool owner",
-    "source": "metadata"
+    "chainId": 137,
+    "network": "matic"
   },
   {
     "address": "0xfa3ba682f2210d05d087b331c71f5b34f16cd3e9",
-    "chain": "mega",
+    "name": null,
     "chainId": 6342,
-    "name": null,
-    "source": "metadata"
+    "network": "chain-6342"
   },
   {
     "address": "0xfa3ba682f2210d05d087b331c71f5b34f16cd3e9",
-    "chain": "mnt",
-    "chainId": 5000,
     "name": null,
-    "source": "metadata"
+    "chainId": 5000,
+    "network": "mnt"
   },
   {
     "address": "0x0d30a563e38fe2926b37783a046004a7869ade6c",
-    "chain": "oeth",
-    "chainId": 10,
     "name": null,
-    "source": "metadata"
+    "chainId": 10,
+    "network": "oeth"
   },
   {
     "address": "0x37fb3e91eb591e2d7140e06d2dceefbb43306286",
-    "chain": "oeth",
-    "chainId": 10,
     "name": null,
-    "source": "metadata"
+    "chainId": 10,
+    "network": "oeth"
   },
   {
     "address": "0x71a06e7f6332dca230748d387758bfc4618a2799",
-    "chain": "oeth",
-    "chainId": 10,
     "name": null,
-    "source": "metadata"
+    "chainId": 10,
+    "network": "oeth"
   },
   {
     "address": "0x5ae348bb75bc9587290a28636187b840e1f5dca2",
-    "chain": "plasma",
-    "chainId": 9745,
     "name": null,
-    "source": "metadata"
+    "chainId": 9745,
+    "network": "chain-9745"
   },
   {
     "address": "0xee68df9f661da6ed968ea4cbf7ec68fcfe375bc6",
-    "chain": "scr",
-    "chainId": 534352,
     "name": null,
-    "source": "metadata"
+    "chainId": 534352,
+    "network": "scroll"
   },
   {
     "address": "0xddc16e789bc667d531fc04034a70dd575cfee098",
-    "chain": "sep",
-    "chainId": 11155111,
     "name": null,
-    "source": "metadata"
+    "chainId": 11155111,
+    "network": "sep"
   },
   {
     "address": "0xcbcdd778aa25476f203814214dd3e9b9c46829a1",
-    "chain": "sonic",
-    "chainId": 146,
     "name": null,
-    "source": "metadata"
+    "chainId": 146,
+    "network": "chain-146"
   },
   {
     "address": "0x26d60a69f3c9ac4c9a405a5d3d545476ecc75527",
-    "chain": "stable",
-    "chainId": 2016,
     "name": null,
-    "source": "metadata"
+    "chainId": 2016,
+    "network": "chain-2016"
   },
   {
     "address": "0x3da6b24d9003228356f7040f6e6b1fa5757c7a2c",
-    "chain": "tac",
-    "chainId": 239,
     "name": null,
-    "source": "metadata"
+    "chainId": 239,
+    "network": "chain-239"
   },
   {
     "address": "0x9fc47d6a2f5a1efd8baf475e1873c76d9b28ddfd",
-    "chain": "unichain",
-    "chainId": 130,
     "name": null,
-    "source": "metadata"
+    "chainId": 130,
+    "network": "chain-130"
   },
   {
     "address": "0x449defbac8dc846fe51c6f0abd92d0f1e1b2b3e5",
-    "chain": "xlayer",
-    "chainId": 196,
     "name": null,
-    "source": "metadata"
+    "chainId": 196,
+    "network": "xdc"
   },
   {
     "address": "0xee68df9f661da6ed968ea4cbf7ec68fcfe375bc6",
-    "chain": "xlayer",
-    "chainId": 196,
     "name": null,
-    "source": "metadata"
+    "chainId": 196,
+    "network": "xdc"
   },
   {
     "address": "0x424fc153c4005f8d5f23e08d94f5203d99e9b160",
-    "chain": "zkevm",
-    "chainId": 1101,
     "name": null,
-    "source": "metadata"
+    "chainId": 1101,
+    "network": "zkevm"
   },
   {
     "address": "0xed38da849b20fa27b07d073053c5f5aae6a2db6b",
-    "chain": "zksync",
-    "chainId": 324,
     "name": null,
-    "source": "metadata"
+    "chainId": 324,
+    "network": "zksync"
+  },
+  {
+    "address": "0xb866e12b414d9f975034c4ba51498e6e64559a4c",
+    "name": "test",
+    "chainId": 56,
+    "network": "bnb"
+  },
+  {
+    "address": "0xb866e12b414d9f975034c4ba51498e6e64559a4c",
+    "name": "test",
+    "chainId": 1,
+    "network": "eth"
   }
 ]

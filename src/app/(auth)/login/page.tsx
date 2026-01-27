@@ -16,12 +16,25 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
+      // Trim whitespace from inputs
+      const trimmedUsername = username.trim()
+      const trimmedPassword = password.trim()
+
+      if (!trimmedUsername || !trimmedPassword) {
+        setError('Username and password are required')
+        setLoading(false)
+        return
+      }
+
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ 
+          username: trimmedUsername, 
+          password: trimmedPassword 
+        }),
       })
 
       const data = await response.json()
@@ -32,10 +45,10 @@ export default function LoginPage() {
         return
       }
 
-      // Redirect to dashboard
-      router.push('/wallets')
-      router.refresh()
+      // Redirect to dashboard with full page reload to ensure session is updated
+      window.location.href = '/wallets'
     } catch (err) {
+      console.error('Login error:', err)
       setError('An error occurred. Please try again.')
       setLoading(false)
     }
@@ -45,7 +58,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-md">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-black">
             Sign in to Multisig Registry
           </h2>
         </div>
@@ -57,7 +70,7 @@ export default function LoginPage() {
           )}
           <div className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="username" className="block text-sm font-medium text-black">
                 Username
               </label>
               <input
@@ -67,11 +80,11 @@ export default function LoginPage() {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+                className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-black shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-medium text-black">
                 Password
               </label>
               <input
@@ -81,7 +94,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+                className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-black shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
               />
             </div>
           </div>

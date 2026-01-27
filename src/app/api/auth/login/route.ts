@@ -13,11 +13,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { username, password } = loginSchema.parse(body)
 
+    // Trim whitespace from username
+    const trimmedUsername = username.trim()
+
     const user = await db.user.findUnique({
-      where: { username },
+      where: { username: trimmedUsername },
     })
 
     if (!user) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[Login] User not found: ${trimmedUsername}`)
+      }
       return NextResponse.json(
         { error: 'Invalid username or password' },
         { status: 401 }
@@ -26,6 +32,9 @@ export async function POST(request: NextRequest) {
 
     const isValid = await verifyPassword(password, user.passwordHash)
     if (!isValid) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[Login] Invalid password for user: ${trimmedUsername}`)
+      }
       return NextResponse.json(
         { error: 'Invalid username or password' },
         { status: 401 }

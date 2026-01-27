@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSafesByOwner } from '@/lib/safeApi'
+import { syncSignersToJson } from '@/lib/json-sync'
 import { z } from 'zod'
 import { requireAuth } from '@/lib/auth'
 import type { SignerWithWallets, WalletBasicInfo } from '@/types'
@@ -139,6 +140,14 @@ export async function PUT(
       },
     })
 
+    // Sync to JSON file
+    try {
+      await syncSignersToJson()
+    } catch (error) {
+      console.error('Failed to sync signers to JSON:', error)
+      // Don't fail the request if JSON sync fails
+    }
+
     return NextResponse.json(signer)
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -151,6 +160,43 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     console.error('Update signer error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await requireAuth()
+    if (!session.isAdmin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    const { id } = await params
+
+    await db.signer.delete({
+      where: { id },
+    })
+
+    // Sync to JSON file
+    try {
+      await syncSignersToJson()
+    } catch (error) {
+      console.error('Failed to sync signers to JSON:', error)
+      // Don't fail the request if JSON sync fails
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    console.error('Delete signer error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

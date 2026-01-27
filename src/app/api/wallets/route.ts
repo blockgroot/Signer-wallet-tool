@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getSafeInfo } from '@/lib/safeApi'
+import { getChainById } from '@/lib/chains'
+import { syncWalletsToJson } from '@/lib/json-sync'
 import { z } from 'zod'
 import { requireAuth } from '@/lib/auth'
 
@@ -63,24 +65,83 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { address, name, chainId, tag } = createWalletSchema.parse(body)
 
-    // Verify the wallet exists on the chain by fetching from Safe API
-    try {
-      await getSafeInfo(address, chainId)
-    } catch (error) {
+    // Normalize address to lowercase for comparison
+    const normalizedAddress = address.toLowerCase()
+
+    // Check for duplicate wallet (address + chainId combination)
+    const existingWallet = await db.wallet.findUnique({
+      where: {
+        address_chainId: {
+          address: normalizedAddress,
+          chainId,
+        },
+      },
+    })
+
+    if (existingWallet) {
+      const chainName = getChainById(chainId)?.name || `chain ${chainId}`
       return NextResponse.json(
-        { error: 'Wallet not found on the specified chain' },
-        { status: 404 }
+        { error: `Wallet with address ${address} already exists` },
+        { status: 400 }
       )
     }
 
+    // Validate that the wallet exists on the specified chain via Safe API
+    // This is required - we must verify the wallet exists before adding
+    const apiKey = process.env.SAFE_API_KEY?.trim()
+    if (!apiKey || apiKey === '') {
+      return NextResponse.json(
+        { error: 'Safe API configuration error. SAFE_API_KEY is not set or is empty. Please contact administrator.' },
+        { status: 500 }
+      )
+    }
+
+    try {
+      await getSafeInfo(normalizedAddress, chainId)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      const chainName = getChainById(chainId)?.name || 'the specified chain'
+      
+      // If it's a "not a Safe wallet" error (422), reject it
+      if (errorMessage.includes('not a Safe wallet') || errorMessage.includes('422')) {
+        return NextResponse.json(
+          { error: `Address ${address} is not recognized as a Safe wallet on ${chainName}. Please verify the address and chain are correct.` },
+          { status: 400 }
+        )
+      }
+      
+      // If it's a "not found" error (404), reject it
+      if (errorMessage.includes('not found') || errorMessage.includes('404')) {
+        return NextResponse.json(
+          { error: `Wallet not found on ${chainName}. The address might not be a Safe wallet or may not exist on this chain.` },
+          { status: 404 }
+        )
+      }
+      
+      // For other errors (rate limit, network issues), reject with error message
+      return NextResponse.json(
+        { error: `Failed to verify wallet on ${chainName}: ${errorMessage}. Please try again later.` },
+        { status: 400 }
+      )
+    }
+
+    // All validations passed - create the wallet
     const wallet = await db.wallet.create({
       data: {
-        address,
+        address: normalizedAddress,
         name: name || null,
         chainId,
         tag: tag || null,
       },
     })
+
+    // Sync to JSON file
+    try {
+      await syncWalletsToJson()
+    } catch (error) {
+      console.error('Failed to sync wallets to JSON:', error)
+      // Don't fail the request if JSON sync fails
+    }
 
     return NextResponse.json(wallet, { status: 201 })
   } catch (error) {

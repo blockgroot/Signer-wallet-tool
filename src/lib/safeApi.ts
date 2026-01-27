@@ -133,8 +133,8 @@ async function fetchWithRetry<T>(
  * Get API key from environment
  */
 function getApiKey(): string {
-  const apiKey = process.env.SAFE_API_KEY
-  if (!apiKey) {
+  const apiKey = process.env.SAFE_API_KEY?.trim()
+  if (!apiKey || apiKey === '') {
     throw new Error('SAFE_API_KEY is not set in environment variables')
   }
   return apiKey

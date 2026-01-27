@@ -22,9 +22,9 @@ export default async function DashboardLayout({
               {session ? (
                 <>
                   <span className="mr-4 text-sm text-black">
-                    {session.username}
+                    Logged in as <strong>{session.username}</strong>
                     {session.isAdmin && (
-                      <span className="ml-2 rounded bg-indigo-100 px-2 py-1 text-xs text-black">
+                      <span className="ml-2 rounded bg-indigo-100 px-2 py-1 text-xs font-medium text-black">
                         Admin
                       </span>
                     )}

@@ -7,6 +7,7 @@ import ChainBadge from '@/components/ChainBadge'
 import WalletTag from '@/components/WalletTag'
 import AddressDisplay from '@/components/AddressDisplay'
 import LoginModal from '@/components/LoginModal'
+import EditWalletModal from '@/components/EditWalletModal'
 import { parseTags, getExplorerUrl } from '@/lib/utils'
 import type { WalletWithDetails } from '@/types'
 
@@ -66,6 +67,35 @@ export default function WalletDetailPage() {
     setShowEditModal(true)
   }
 
+  const handleDelete = async () => {
+    if (!isAdmin) {
+      setShowLoginModal(true)
+      return
+    }
+
+    if (!confirm(`Are you sure you want to delete wallet ${wallet?.name || wallet?.address}? This action cannot be undone.`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/wallets/${walletId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        alert(data.error || 'Failed to delete wallet')
+        return
+      }
+
+      // Redirect to wallets dashboard
+      router.push('/wallets')
+    } catch (error) {
+      console.error('Failed to delete wallet:', error)
+      alert('An error occurred while deleting the wallet')
+    }
+  }
+
   const copyAddress = () => {
     if (wallet) {
       navigator.clipboard.writeText(wallet.address)
@@ -75,6 +105,10 @@ export default function WalletDetailPage() {
 
   const handleLoginSuccess = () => {
     loadSession()
+  }
+
+  const handleEditSuccess = () => {
+    loadWallet() // Refresh wallet data
   }
 
   if (loading) {
@@ -97,15 +131,32 @@ export default function WalletDetailPage() {
         message="You need to login to edit wallet details."
       />
 
+      {wallet && (
+        <EditWalletModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onSuccess={handleEditSuccess}
+          wallet={wallet}
+        />
+      )}
+
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-bold text-black">Wallet Details</h1>
         {isAdmin && (
-          <button
-            onClick={handleEdit}
-            className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-          >
-            Edit Details
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleEdit}
+              className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+            >
+              Edit Details
+            </button>
+            <button
+              onClick={handleDelete}
+              className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+            >
+              Delete
+            </button>
+          </div>
         )}
       </div>
 

@@ -7,6 +7,7 @@ import NetworkToggle from '@/components/NetworkToggle'
 import ChainBadge from '@/components/ChainBadge'
 import WalletTag from '@/components/WalletTag'
 import LoginModal from '@/components/LoginModal'
+import AddWalletModal from '@/components/AddWalletModal'
 import { parseTags, getExplorerUrl } from '@/lib/utils'
 
 interface WalletSigner {
@@ -37,6 +38,7 @@ export default function WalletsPage() {
   const [selectedChainId, setSelectedChainId] = useState<number | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const [showAddWalletModal, setShowAddWalletModal] = useState(false)
   const [loginMessage, setLoginMessage] = useState('')
 
   useEffect(() => {
@@ -119,12 +121,15 @@ export default function WalletsPage() {
       setShowLoginModal(true)
       return
     }
-    // TODO: Open add wallet modal
-    alert('Add wallet functionality coming soon')
+    setShowAddWalletModal(true)
   }
 
   const handleLoginSuccess = () => {
     loadSession()
+  }
+
+  const handleAddWalletSuccess = () => {
+    loadWallets() // Refresh the wallet list
   }
 
   return (
@@ -134,6 +139,12 @@ export default function WalletsPage() {
         onClose={() => setShowLoginModal(false)}
         onSuccess={handleLoginSuccess}
         message={loginMessage}
+      />
+
+      <AddWalletModal
+        isOpen={showAddWalletModal}
+        onClose={() => setShowAddWalletModal(false)}
+        onSuccess={handleAddWalletSuccess}
       />
 
       <div className="mb-6 flex items-center justify-between">
