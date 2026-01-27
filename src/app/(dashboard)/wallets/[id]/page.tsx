@@ -161,7 +161,9 @@ export default function WalletDetailPage() {
                   <div>
                     <p className="text-lg font-semibold text-gray-400">Live data unavailable</p>
                     <p className="text-xs text-gray-500 mt-1">
-                      Unable to fetch threshold from Safe API. Check server logs for details.
+                      {wallet._apiError 
+                        ? `Error: ${wallet._apiError}` 
+                        : 'Unable to fetch threshold from Safe API. Check server logs for details.'}
                     </p>
                   </div>
                 ) : (

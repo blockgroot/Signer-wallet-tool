@@ -1,0 +1,37 @@
+[{
+
+    "Ethereum": "https://api.safe.global/tx-service/eth/api/v1/safes/{safeAddress}/"
+}, 
+{
+    "Arbitrum": "https://api.safe.global/tx-service/arb1/api/v1/safes/{safeAddress}/"
+},
+{
+    "Optimism": "https://api.safe.global/tx-service/oeth/api/v1/safes/{safeAddress}/"
+},
+{
+    "Base": "https://api.safe.global/tx-service/base/api/v1/safes/{safeAddress}/"
+},
+{
+    "Avalanche": "https://api.safe.global/tx-service/avax/api/v1/safes/{safeAddress}/"
+},
+{
+    "Polygon": "https://api.safe.global/tx-service/pol/api/v1/safes/{safeAddress}/"
+},
+{
+    "BNB": "https://api.safe.global/tx-service/bnb/api/v1/safes/{safeAddress}/"
+},
+{
+    "Zkevm": "https://api.safe.global/tx-service/zkevm/api/v1/safes/{safeAddress}/"
+},
+{"Gnosis": "https://api.safe.global/tx-service/gno/api/v1/safes/{safeAddress}/"},
+{ "XLayer": "https://api.safe.global/tx-service/okb/api/v1/safes/{safeAddress}/"},
+{"Celo": "https://api.safe.global/tx-service/celo/api/v1/safes/{safeAddress}/"},
+{"Linea": "https://api.safe.global/tx-service/linea/api/v1/safes/{safeAddress}/"},
+{"Scroll": "https://api.safe.global/tx-service/scroll/api/v1/safes/{safeAddress}/"},
+{"Mantle": "https://api.safe.global/tx-service/mantle/api/v1/safes/{safeAddress}/"},
+{"Aurora": "https://api.safe.global/tx-service/aurora/api/v1/safes/{safeAddress}/"}
+
+
+
+
+]

@@ -17,12 +17,14 @@
     "import:signers": "tsx scripts/import-signers.ts",
     "import:json": "tsx scripts/import-from-json.ts",
     "sync:csv": "tsx scripts/sync-from-csv.ts",
+    "cleanup:wallets": "tsx scripts/cleanup-orphaned-wallets.ts",
     "test:setup": "bash scripts/test-setup.sh"
   },
   "dependencies": {
     "@prisma/client": "^6.19.2",
     "bcryptjs": "^3.0.3",
     "cookie": "^1.1.1",
+    "ethers": "^6.16.0",
     "next": "16.1.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",

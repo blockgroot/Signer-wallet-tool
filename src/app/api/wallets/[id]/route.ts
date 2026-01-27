@@ -42,16 +42,26 @@ export async function GET(
     let apiError: string | null = null
     
     try {
+      // Log the request details for debugging
+      console.log(`[Wallet Detail] Fetching Safe info for ${wallet.address} on chain ${wallet.chainId}`)
+      
       safeInfo = await getSafeInfo(wallet.address, wallet.chainId)
       
       // Log threshold for debugging
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`Fetched Safe info for ${wallet.address}: threshold=${safeInfo.threshold}, owners=${safeInfo.owners.length}`)
-      }
+      console.log(`[Wallet Detail] ✅ Successfully fetched Safe info: threshold=${safeInfo.threshold}, owners=${safeInfo.owners.length}`)
     } catch (error) {
-      // Log error details
+      // Log error details with full stack trace
       const errorMessage = error instanceof Error ? error.message : String(error)
+      const errorStack = error instanceof Error ? error.stack : undefined
       apiError = errorMessage
+      
+      // Always log errors in detail for debugging
+      console.error(`[Wallet Detail] ❌ Failed to fetch Safe info for ${wallet.address} on chain ${wallet.chainId}:`, {
+        error: errorMessage,
+        stack: errorStack,
+        walletAddress: wallet.address,
+        chainId: wallet.chainId,
+      })
       
       // Check if it's an API key error
       if (errorMessage.includes('SAFE_API_KEY is not set')) {
@@ -68,13 +78,12 @@ export async function GET(
         errorMessage.includes('not a Safe wallet') ||
         errorMessage.includes('not found') ||
         errorMessage.includes('Rate limited') ||
-        errorMessage.includes('Unsupported chain')
+        errorMessage.includes('Unsupported chain') ||
+        errorMessage.includes('Checksum address validation failed')
       ) {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn(`Wallet ${wallet.address} on chain ${wallet.chainId}: ${errorMessage}`)
-        }
+        console.warn(`[Wallet Detail] ⚠️ Expected error for ${wallet.address} on chain ${wallet.chainId}: ${errorMessage}`)
       } else {
-        console.error('Failed to fetch safe info:', error)
+        console.error(`[Wallet Detail] ❌ Unexpected error:`, error)
       }
       
       // Only use default values if it's an expected error (not API key issue)

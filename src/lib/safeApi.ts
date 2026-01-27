@@ -3,7 +3,14 @@
  * Handles API key authentication, retries, and rate limiting
  */
 
-import { getChainById, SUPPORTED_CHAINS } from './chains'
+import { getAddress } from 'ethers'
+import { 
+  getChainById, 
+  SUPPORTED_CHAINS, 
+  getSafeApiCodeFromChainId,
+  getSafeApiCodeFromChainName,
+  getSafeApiUrlForNetwork 
+} from './chains'
 
 export interface SafeInfo {
   address: string
@@ -65,13 +72,42 @@ async function fetchWithRetry<T>(
       }
 
       if (!response.ok) {
+        // Try to get error details from response body
+        let errorDetails = ''
+        try {
+          const errorBody = await response.json().catch(() => ({}))
+          if (errorBody.message) {
+            errorDetails = errorBody.message
+          } else if (errorBody.detail) {
+            errorDetails = errorBody.detail
+          } else if (typeof errorBody === 'object') {
+            errorDetails = JSON.stringify(errorBody)
+          } else {
+            errorDetails = response.statusText
+          }
+        } catch {
+          errorDetails = response.statusText
+        }
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.error(`[Safe API] Error response (${response.status}):`, {
+            url,
+            status: response.status,
+            statusText: response.statusText,
+            errorDetails,
+          })
+        }
+        
         if (response.status === 404) {
-          throw new Error(`Safe not found: ${url}`)
+          throw new Error(`Safe not found: ${errorDetails || url}`)
         }
         if (response.status === 422) {
-          throw new Error(`Address is not a Safe wallet: ${url}`)
+          throw new Error(`Address is not a Safe wallet: ${errorDetails || url}`)
         }
-        throw new Error(`Failed to fetch: ${response.statusText} (${response.status})`)
+        if (response.status === 400) {
+          throw new Error(`Bad request: ${errorDetails || response.statusText}`)
+        }
+        throw new Error(`Failed to fetch (${response.status}): ${errorDetails || response.statusText}`)
       }
 
       return await response.json()
@@ -106,82 +142,166 @@ function getApiKey(): string {
 
 /**
  * Get Safe info for a specific address on a chain
+ * Uses network-specific endpoint when chainId is known, otherwise tries all networks
  */
 export async function getSafeInfo(
   address: string,
-  chainId: number
+  chainId: number | null = null,
+  chainName: string | null = null
 ): Promise<SafeInfo> {
-  const chain = getChainById(chainId)
-  if (!chain) {
-    throw new Error(`Unsupported chain ID: ${chainId}`)
-  }
-
+  // Checksum the address before making API calls
+  const checksummedAddress = getAddress(address)
   const apiKey = getApiKey()
-  const apiUrl = `${chain.safeApiUrl}/api/v1/safes/${address}/`
-
-  try {
-    const data = await fetchWithRetry<{
-      address: string
-      nonce: number
-      threshold: number
-      owners: string[]
-      masterCopy?: string
-      fallbackHandler?: string
-      guard?: string
-      version?: string
-    }>(apiUrl, {
-      Authorization: `Bearer ${apiKey}`,
-    })
-
-    // Validate and log threshold data
-    const threshold = data.threshold ?? 0
-    const owners = data.owners || []
-    
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`Safe API response for ${address} on chain ${chainId}:`, {
-        threshold,
-        ownersCount: owners.length,
-        hasThreshold: data.threshold !== undefined,
-      })
-    }
-
-    return {
-      address: data.address || address,
-      nonce: data.nonce ?? 0,
-      threshold: threshold,
-      owners: owners,
-      masterCopy: data.masterCopy,
-      fallbackHandler: data.fallbackHandler,
-      guard: data.guard,
-      version: data.version,
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      throw error
-    }
-    throw new Error(`Failed to fetch safe info: ${String(error)}`)
+  
+  // Try to get the API code from chainId or chainName
+  let apiCode: string | null = null
+  if (chainId) {
+    apiCode = getSafeApiCodeFromChainId(chainId)
   }
+  if (!apiCode && chainName) {
+    apiCode = getSafeApiCodeFromChainName(chainName)
+  }
+  
+  // If we have a specific network, try that first
+  if (apiCode) {
+    try {
+      return await getSafeInfoForNetwork(checksummedAddress, apiCode, apiKey)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      // If it's a "not found" or "not a Safe" error, continue to try all networks
+      if (
+        errorMessage.includes('not found') ||
+        errorMessage.includes('not a Safe wallet') ||
+        errorMessage.includes('422')
+      ) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`Wallet not found on ${apiCode}, trying all networks...`)
+        }
+      } else {
+        // For other errors (rate limit, network error), throw immediately
+        throw error
+      }
+    }
+  }
+  
+  // If no network specified or network-specific call failed, try all networks
+  return await getSafeInfoFromAllNetworks(checksummedAddress, apiKey)
+}
+
+/**
+ * Get Safe info for a specific network
+ */
+async function getSafeInfoForNetwork(
+  address: string,
+  apiCode: string,
+  apiKey: string
+): Promise<SafeInfo> {
+  const apiUrl = `${getSafeApiUrlForNetwork(apiCode)}/api/v1/safes/${address}/`
+  
+  // Log the API call for debugging
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[Safe API] Calling: ${apiUrl}`)
+    console.log(`[Safe API] Address (checksummed): ${address}`)
+    console.log(`[Safe API] Network code: ${apiCode}`)
+  }
+  
+  const data = await fetchWithRetry<{
+    address: string
+    nonce: number
+    threshold: number
+    owners: string[]
+    masterCopy?: string
+    fallbackHandler?: string
+    guard?: string
+    version?: string
+  }>(apiUrl, {
+    Authorization: `Bearer ${apiKey}`,
+  })
+
+  // Validate and log threshold data
+  const threshold = data.threshold ?? 0
+  const owners = data.owners || []
+  
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`Safe API response for ${address} on ${apiCode}:`, {
+      threshold,
+      ownersCount: owners.length,
+      hasThreshold: data.threshold !== undefined,
+    })
+  }
+
+  return {
+    address: data.address ? getAddress(data.address) : address,
+    nonce: data.nonce ?? 0,
+    threshold: threshold,
+    owners: owners.map(owner => getAddress(owner)), // Checksum all owner addresses
+    masterCopy: data.masterCopy ? getAddress(data.masterCopy) : undefined,
+    fallbackHandler: data.fallbackHandler ? getAddress(data.fallbackHandler) : undefined,
+    guard: data.guard ? getAddress(data.guard) : undefined,
+    version: data.version,
+  }
+}
+
+/**
+ * Try to get Safe info by searching across all supported networks
+ */
+async function getSafeInfoFromAllNetworks(
+  address: string,
+  apiKey: string
+): Promise<SafeInfo> {
+  const errors: string[] = []
+  
+  // Try each network sequentially
+  for (const chain of SUPPORTED_CHAINS) {
+    try {
+      const result = await getSafeInfoForNetwork(address, chain.safeApiCode, apiKey)
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`✅ Found Safe on ${chain.name} (${chain.safeApiCode})`)
+      }
+      return result
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      // Only collect non-404/422 errors (404/422 means not found on this network, which is expected)
+      if (
+        !errorMessage.includes('not found') &&
+        !errorMessage.includes('404') &&
+        !errorMessage.includes('not a Safe wallet') &&
+        !errorMessage.includes('422')
+      ) {
+        errors.push(`${chain.name}: ${errorMessage}`)
+      }
+      // Small delay between networks
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+  }
+  
+  // If we tried all networks and none worked, throw an error
+  if (errors.length > 0) {
+    throw new Error(`Failed to fetch Safe info: ${errors.join('; ')}`)
+  }
+  throw new Error(`Address is not a Safe wallet on any supported network`)
 }
 
 /**
  * Get all Safes owned by a specific address across all supported chains
  */
 export async function getSafesByOwner(owner: string): Promise<Record<number, SafeWithThreshold[]>> {
-  const normalizedOwner = owner.toLowerCase()
+  // Checksum the owner address before making API calls
+  const checksummedOwner = getAddress(owner)
   const apiKey = getApiKey()
   const result: Record<number, SafeWithThreshold[]> = {}
 
   // Process chains sequentially with small delays to avoid rate limiting
   for (const chain of SUPPORTED_CHAINS) {
     try {
-      const url = `${chain.safeApiUrl}/api/v2/owners/${normalizedOwner}/safes/`
+      const url = `${chain.safeApiUrl}/api/v2/owners/${checksummedOwner}/safes/`
       const data = await fetchWithRetry<OwnerSafesResponse>(url, {
         Authorization: `Bearer ${apiKey}`,
       }, 2, 500) // 2 retries, 500ms delay
 
       if (data.results && data.results.length > 0) {
         result[chain.id] = data.results.map((safe) => ({
-          address: safe.address,
+          address: getAddress(safe.address), // Checksum the address
           threshold: safe.threshold,
           totalOwners: safe.owners.length,
           name: null, // Will be populated from database if available
