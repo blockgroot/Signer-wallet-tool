@@ -76,30 +76,28 @@ async function importFromJson() {
     }
 
     // Find signers with problematic names
-    const problematicSigners = await prisma.signer.findMany({
-      where: {
-        OR: [
-          { name: { equals: '' } },
-          { name: { contains: 'unknown', mode: 'insensitive' } },
-        ],
-      },
+    // Get all signers and filter in memory to avoid Prisma type issues with null
+    const allSigners = await prisma.signer.findMany({
       include: {
         addresses: true,
       },
     })
 
-    // Also get signers with null names (separate query since Prisma doesn't allow null in OR)
-    const nullNameSigners = await prisma.signer.findMany({
-      where: {
-        name: null as any,
-      },
-      include: {
-        addresses: true,
-      },
-    })
+    // Filter for problematic signers in memory
+    const allProblematicSigners = allSigners.filter((signer) => {
+      const name = signer.name || ''
+      const trimmedName = name.trim().toLowerCase()
 
-    // Combine both lists
-    const allProblematicSigners = [...problematicSigners, ...nullNameSigners]
+      return (
+        !signer.name || // null or undefined
+        name.length === 0 || // empty string
+        trimmedName === '' || // trimmed is empty
+        trimmedName === 'unknown' || // explicitly "unknown"
+        trimmedName.length < 2 || // too short to be meaningful
+        // Check if name is just whitespace, dashes, or special characters
+        /^[\s\-_\.]+$/.test(name)
+      )
+    })
 
     if (allProblematicSigners.length > 0) {
       console.log(`  🗑️  Found ${allProblematicSigners.length} signers with problematic names`)
