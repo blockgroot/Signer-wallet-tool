@@ -268,17 +268,5 @@
     "name": null,
     "chainId": 324,
     "network": "zksync"
-  },
-  {
-    "address": "0xb866e12b414d9f975034c4ba51498e6e64559a4c",
-    "name": "test",
-    "chainId": 56,
-    "network": "bnb"
-  },
-  {
-    "address": "0xb866e12b414d9f975034c4ba51498e6e64559a4c",
-    "name": "test",
-    "chainId": 1,
-    "network": "eth"
   }
 ]

@@ -40,8 +40,27 @@ async function postbuildDeploy() {
     console.log('⚠️  Continuing with import (migrations may have already been run)\n')
   }
 
-  // Step 2: Import data from JSON files
-  console.log('📦 Step 2: Importing data from JSON files...\n')
+  // Step 2: Seed admin user
+  console.log('📦 Step 2: Creating admin user...\n')
+  try {
+    // Use DATABASE_URL for seeding (runtime connection)
+    const seedUrl = process.env.DATABASE_URL
+    if (seedUrl) {
+      execSync('tsx scripts/seed-admin.ts', {
+        stdio: 'inherit',
+        env: { ...process.env, DATABASE_URL: seedUrl },
+      })
+      console.log('✅ Admin user created/updated successfully\n')
+    } else {
+      console.log('⚠️  No DATABASE_URL available for seeding\n')
+    }
+  } catch (error) {
+    console.error('❌ Admin user seeding failed:', error)
+    console.log('⚠️  Continuing with data import (admin user may already exist)\n')
+  }
+
+  // Step 3: Import data from JSON files
+  console.log('📦 Step 3: Importing data from JSON files...\n')
   
   // Check if JSON files exist
   const walletsJson = join(process.cwd(), 'data', 'wallets.json')
