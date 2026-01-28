@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate",
+    "postinstall": "DATABASE_URL=${DATABASE_URL:-postgresql://dummy:dummy@localhost:5432/dummy} prisma generate",
     "postbuild": "tsx scripts/postbuild-deploy.ts || echo 'Post-build tasks skipped (non-fatal)'",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
@@ -22,6 +22,7 @@
     "cleanup:signers": "tsx scripts/cleanup-and-reimport-signers.ts",
     "cleanup:invalid-signers": "tsx scripts/cleanup-invalid-signer-addresses.ts",
     "diagnose:signers": "tsx scripts/diagnose-production-signers.ts",
+    "check:missing": "tsx scripts/check-missing-entries.ts",
     "test:setup": "bash scripts/test-setup.sh"
   },
   "dependencies": {

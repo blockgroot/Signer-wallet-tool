@@ -11,6 +11,8 @@ export default defineConfig({
   },
   engine: "classic",
   datasource: {
-    url: env("DATABASE_URL"),
+    // Use a dummy URL for generation if DATABASE_URL is not set
+    // Prisma generation doesn't actually connect to the database
+    url: env("DATABASE_URL") || "postgresql://dummy:dummy@localhost:5432/dummy",
   },
 });
