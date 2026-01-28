@@ -29,10 +29,41 @@ export async function GET(request: NextRequest) {
       include: {
         addresses: {
           orderBy: { createdAt: 'asc' },
+          select: {
+            id: true,
+            address: true,
+            createdAt: true,
+            updatedAt: true,
+            signerId: true,
+            name: true,
+            type: true,
+          },
         },
       },
       orderBy: { createdAt: 'desc' },
     })
+
+    // OPTIMIZATION: Fetch all wallet-signer relationships in ONE query instead of N+1 queries
+    const allAddressIds = signers.flatMap(s => s.addresses.map(a => a.id))
+    
+    // Use groupBy to get counts for all addresses in a single query
+    const walletSignerCounts = allAddressIds.length > 0 
+      ? await db.walletSigner.groupBy({
+          by: ['signerAddressId'],
+          where: {
+            signerAddressId: { in: allAddressIds },
+          },
+          _count: {
+            signerAddressId: true,
+          },
+        })
+      : []
+
+    // Create a map for O(1) lookup instead of database queries
+    const walletCountMap = new Map<string, number>()
+    for (const count of walletSignerCounts) {
+      walletCountMap.set(count.signerAddressId, count._count.signerAddressId)
+    }
 
     // Transform to address-first structure: one row per address
     // Each address gets its signer's name and department as metadata
@@ -60,12 +91,8 @@ export async function GET(request: NextRequest) {
           continue
         }
 
-        // Get wallet count from database (live data fetched on detail page only)
-        const walletCount = await db.walletSigner.count({
-          where: {
-            signerAddressId: address.id,
-          },
-        })
+        // Get wallet count from map (O(1) lookup instead of database query)
+        const walletCount = walletCountMap.get(address.id) || 0
 
         addressRows.push({
           id: address.id,
@@ -74,8 +101,8 @@ export async function GET(request: NextRequest) {
           signerName: signer.name,
           department: signer.department,
           walletCount,
-          addressName: (address as any).name || null,
-          addressType: (address as any).type || null,
+          addressName: address.name || null,
+          addressType: address.type || null,
         })
       }
     }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import AddressDisplay from '@/components/AddressDisplay'
@@ -44,9 +44,16 @@ export default function SignersPage() {
       if (response.ok) {
         const session = await response.json()
         setIsAdmin(session.isAdmin || false)
+      } else if (response.status === 401) {
+        // 401 is expected for unauthenticated users - not an error
+        setIsAdmin(false)
       }
     } catch (error) {
-      console.error('Failed to load session:', error)
+      // Only log unexpected errors
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to load session:', error)
+      }
+      setIsAdmin(false)
     }
   }
 
@@ -107,6 +114,138 @@ export default function SignersPage() {
   const handleAddUserSuccess = () => {
     loadSigners() // Refresh the signer list
   }
+
+  // Memoize processed rows to avoid recalculating on every render
+  const processedRows = useMemo(() => {
+    // Group addresses by signer to assign Account1, Account2, etc.
+    const signerGroups = new Map<string, SignerRow[]>()
+    filteredSigners.forEach(row => {
+      if (!signerGroups.has(row.signerId)) {
+        signerGroups.set(row.signerId, [])
+      }
+      signerGroups.get(row.signerId)!.push(row)
+    })
+    
+    // Process each group to assign Account numbers
+    // Track used name+type combinations to ensure uniqueness
+    const usedCombinations = new Set<string>()
+    const processed: Array<SignerRow & { displayName: string; displayType: string }> = []
+    
+    signerGroups.forEach((rows, signerId) => {
+      // Sort rows by address for consistent ordering
+      const sortedRows = [...rows].sort((a, b) => a.address.localeCompare(b.address))
+      
+      // Separate rows into two groups:
+      // 1. Rows that need Account numbering (no explicit type)
+      // 2. Rows with explicit types
+      const rowsNeedingAccountNumbers: SignerRow[] = []
+      const rowsWithTypes: Array<{ row: SignerRow; displayName: string; displayType: string }> = []
+      
+      // First pass: categorize rows
+      sortedRows.forEach((row) => {
+        // First, check if signer name itself contains type indicators (e.g., "Dheeraj account 1")
+        const signerNameExtracted = extractNameAndType(row.signerName)
+        const baseSignerName = signerNameExtracted.name || row.signerName
+        
+        let displayName = baseSignerName
+        let displayType: string | null = null
+        
+        // If address has explicit name, extract name and type from it
+        if (row.addressName) {
+          const { name, type } = extractNameAndType(row.addressName)
+          displayName = name && name.length > 0 ? name : baseSignerName
+          displayType = type || row.addressType
+        } else if (row.addressType) {
+          // Only explicit type, no address name - use base signer name
+          displayName = baseSignerName
+          displayType = row.addressType
+        } else if (signerNameExtracted.type && !signerNameExtracted.type.startsWith('Account ')) {
+          // Signer name contains type (but NOT Account number), use base name and extracted type
+          // If signer name has "Account 1", ignore it - we'll assign Account numbers sequentially
+          displayName = baseSignerName
+          displayType = signerNameExtracted.type
+        }
+        
+        // Only use the type if it's not an Account number (Account numbers should be assigned sequentially)
+        if (displayType && !displayType.startsWith('Account ')) {
+          rowsWithTypes.push({ row, displayName, displayType })
+        } else {
+          rowsNeedingAccountNumbers.push(row)
+        }
+      })
+      
+      // Second pass: assign Account numbers sequentially (1, 2, 3, 4...)
+      let accountCounter = 0
+      
+      // Process rows with explicit types first
+      rowsWithTypes.forEach(({ row, displayName, displayType }) => {
+        const combinationKey = `${displayName.toLowerCase()}|${displayType.toLowerCase()}`
+        let finalDisplayType = displayType
+        
+        // Check for uniqueness conflict
+        if (usedCombinations.has(combinationKey)) {
+          // Conflict detected - append Account number to make it unique
+          accountCounter++
+          finalDisplayType = `${displayType} Account ${accountCounter}`
+        }
+        
+        const finalKey = `${displayName.toLowerCase()}|${finalDisplayType.toLowerCase()}`
+        usedCombinations.add(finalKey)
+        
+        processed.push({
+          ...row,
+          displayName: displayName || '-',
+          displayType: finalDisplayType || '-',
+        })
+      })
+      
+      // Process rows needing Account numbers - assign sequentially
+      rowsNeedingAccountNumbers.forEach((row) => {
+        const signerNameExtracted = extractNameAndType(row.signerName)
+        const baseSignerName = signerNameExtracted.name || row.signerName
+        
+        accountCounter++
+        const displayName = baseSignerName
+        const displayType = `Account ${accountCounter}`
+        
+        const combinationKey = `${displayName.toLowerCase()}|${displayType.toLowerCase()}`
+        
+        // If somehow there's still a conflict (shouldn't happen for sequential), increment
+        let finalDisplayType = displayType
+        let conflictCounter = 0
+        while (usedCombinations.has(combinationKey)) {
+          conflictCounter++
+          finalDisplayType = `Account ${accountCounter + conflictCounter}`
+          const newKey = `${displayName.toLowerCase()}|${finalDisplayType.toLowerCase()}`
+          if (!usedCombinations.has(newKey)) {
+            break
+          }
+        }
+        
+        const finalKey = `${displayName.toLowerCase()}|${finalDisplayType.toLowerCase()}`
+        usedCombinations.add(finalKey)
+        
+        processed.push({
+          ...row,
+          displayName: displayName || '-',
+          displayType: finalDisplayType || '-',
+        })
+      })
+    })
+    
+    // Sort by Name column lexicographically
+    processed.sort((a, b) => {
+      const nameA = a.displayName.toLowerCase()
+      const nameB = b.displayName.toLowerCase()
+      if (nameA !== nameB) {
+        return nameA.localeCompare(nameB)
+      }
+      // If names are equal, sort by type
+      return (a.displayType || '').localeCompare(b.displayType || '')
+    })
+    
+    return processed
+  }, [filteredSigners])
 
   return (
     <div>
@@ -171,162 +310,33 @@ export default function SignersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
-              {(() => {
-                // Group addresses by signer to assign Account1, Account2, etc.
-                const signerGroups = new Map<string, SignerRow[]>()
-                filteredSigners.forEach(row => {
-                  if (!signerGroups.has(row.signerId)) {
-                    signerGroups.set(row.signerId, [])
-                  }
-                  signerGroups.get(row.signerId)!.push(row)
-                })
-                
-                // Process each group to assign Account numbers
-                // Track used name+type combinations to ensure uniqueness
-                const usedCombinations = new Set<string>()
-                const processedRows: Array<SignerRow & { displayName: string; displayType: string }> = []
-                
-                signerGroups.forEach((rows, signerId) => {
-                  // Sort rows by address for consistent ordering
-                  const sortedRows = [...rows].sort((a, b) => a.address.localeCompare(b.address))
-                  
-                  // Separate rows into two groups:
-                  // 1. Rows that need Account numbering (no explicit type)
-                  // 2. Rows with explicit types
-                  const rowsNeedingAccountNumbers: SignerRow[] = []
-                  const rowsWithTypes: Array<{ row: SignerRow; displayName: string; displayType: string }> = []
-                  
-                  // First pass: categorize rows
-                  sortedRows.forEach((row) => {
-                    // First, check if signer name itself contains type indicators (e.g., "Dheeraj account 1")
-                    const signerNameExtracted = extractNameAndType(row.signerName)
-                    const baseSignerName = signerNameExtracted.name || row.signerName
-                    
-                    let displayName = baseSignerName
-                    let displayType: string | null = null
-                    
-                    // If address has explicit name, extract name and type from it
-                    if (row.addressName) {
-                      const { name, type } = extractNameAndType(row.addressName)
-                      displayName = name && name.length > 0 ? name : baseSignerName
-                      displayType = type || row.addressType
-                    } else if (row.addressType) {
-                      // Only explicit type, no address name - use base signer name
-                      displayName = baseSignerName
-                      displayType = row.addressType
-                    } else if (signerNameExtracted.type && !signerNameExtracted.type.startsWith('Account ')) {
-                      // Signer name contains type (but NOT Account number), use base name and extracted type
-                      // If signer name has "Account 1", ignore it - we'll assign Account numbers sequentially
-                      displayName = baseSignerName
-                      displayType = signerNameExtracted.type
-                    }
-                    
-                    // Only use the type if it's not an Account number (Account numbers should be assigned sequentially)
-                    if (displayType && !displayType.startsWith('Account ')) {
-                      rowsWithTypes.push({ row, displayName, displayType })
-                    } else {
-                      rowsNeedingAccountNumbers.push(row)
-                    }
-                  })
-                  
-                  // Second pass: assign Account numbers sequentially (1, 2, 3, 4...)
-                  let accountCounter = 0
-                  
-                  // Process rows with explicit types first
-                  rowsWithTypes.forEach(({ row, displayName, displayType }) => {
-                    const combinationKey = `${displayName.toLowerCase()}|${displayType.toLowerCase()}`
-                    let finalDisplayType = displayType
-                    
-                    // Check for uniqueness conflict
-                    if (usedCombinations.has(combinationKey)) {
-                      // Conflict detected - append Account number to make it unique
-                      accountCounter++
-                      finalDisplayType = `${displayType} Account ${accountCounter}`
-                    }
-                    
-                    const finalKey = `${displayName.toLowerCase()}|${finalDisplayType.toLowerCase()}`
-                    usedCombinations.add(finalKey)
-                    
-                    processedRows.push({
-                      ...row,
-                      displayName: displayName || '-',
-                      displayType: finalDisplayType || '-',
-                    })
-                  })
-                  
-                  // Process rows needing Account numbers - assign sequentially
-                  rowsNeedingAccountNumbers.forEach((row) => {
-                    const signerNameExtracted = extractNameAndType(row.signerName)
-                    const baseSignerName = signerNameExtracted.name || row.signerName
-                    
-                    accountCounter++
-                    const displayName = baseSignerName
-                    const displayType = `Account ${accountCounter}`
-                    
-                    const combinationKey = `${displayName.toLowerCase()}|${displayType.toLowerCase()}`
-                    
-                    // If somehow there's still a conflict (shouldn't happen for sequential), increment
-                    let finalDisplayType = displayType
-                    let conflictCounter = 0
-                    while (usedCombinations.has(combinationKey)) {
-                      conflictCounter++
-                      finalDisplayType = `Account ${accountCounter + conflictCounter}`
-                      const newKey = `${displayName.toLowerCase()}|${finalDisplayType.toLowerCase()}`
-                      if (!usedCombinations.has(newKey)) {
-                        break
-                      }
-                    }
-                    
-                    const finalKey = `${displayName.toLowerCase()}|${finalDisplayType.toLowerCase()}`
-                    usedCombinations.add(finalKey)
-                    
-                    processedRows.push({
-                      ...row,
-                      displayName: displayName || '-',
-                      displayType: finalDisplayType || '-',
-                    })
-                  })
-                })
-                
-                // Sort by Name column lexicographically
-                processedRows.sort((a, b) => {
-                  const nameA = a.displayName.toLowerCase()
-                  const nameB = b.displayName.toLowerCase()
-                  if (nameA !== nameB) {
-                    return nameA.localeCompare(nameB)
-                  }
-                  // If names are equal, sort by type
-                  return (a.displayType || '').localeCompare(b.displayType || '')
-                })
-                
-                return processedRows.map((row) => (
-                  <tr key={row.id} className="hover:bg-gray-50">
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <AddressDisplay
-                        address={row.address}
-                        name={null}
-                        signerId={row.signerId}
-                        linkToSigner={true}
-                        showFull={false}
-                      />
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <Link
-                        href={`/signers/${row.signerId}`}
-                        className="font-medium text-blue-600 hover:text-blue-800"
-                      >
-                        {row.displayName}
-                      </Link>
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
-                      {row.displayType}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
-                      {row.department || '-'}
-                    </td>
-                  </tr>
-                ))
-              })()}
+              {processedRows.map((row) => (
+                <tr key={row.id} className="hover:bg-gray-50">
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <AddressDisplay
+                      address={row.address}
+                      name={null}
+                      signerId={row.signerId}
+                      linkToSigner={true}
+                      showFull={false}
+                    />
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <Link
+                      href={`/signers/${row.signerId}`}
+                      className="font-medium text-blue-600 hover:text-blue-800"
+                    >
+                      {row.displayName}
+                    </Link>
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
+                    {row.displayType}
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
+                    {row.department || '-'}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
