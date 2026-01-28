@@ -22,7 +22,7 @@ const CHAIN_MAP: Record<string, number> = {
   sonic: 146, // Sonic
   berachain: 80094, // Berachain
   ink: 57073, // Ink
-  plasma: 1666600000, // Plasma (if this is Harmony)
+  plasma: 9745, // Plasma Mainnet (chainlist.org/chain/9745)
   stable: 17000, // Holesky testnet (if this is what stable refers to)
   mega: 1329, // MegaETH
   mnt: 5000, // Mantle

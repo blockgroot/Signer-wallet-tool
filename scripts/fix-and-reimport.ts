@@ -20,7 +20,7 @@ async function fixAndReimport() {
   console.log('🔧 Fixing JSON files and reimporting to database...\n')
 
   const walletsJsonFile = path.join(process.cwd(), 'data', 'wallets.json')
-  const signersJsonFile = path.join(process.cwd(), 'data', 'signer.json')
+  const signersJsonFile = path.join(process.cwd(), 'data', 'signers.json')
 
   // Step 0: Get correct names from database before clearing
   console.log('📖 Reading current database to get correct names...\n')
@@ -62,7 +62,7 @@ async function fixAndReimport() {
   }
 
   console.log(`📋 Found ${wallets.length} entries in wallets.json`)
-  console.log(`📋 Found ${signers.length} entries in signer.json\n`)
+  console.log(`📋 Found ${signers.length} entries in signers.json\n`)
 
   // Step 1: Fix JSON files - update names from database and move wrong entries
   console.log('🔍 Checking for wrong entries in JSON files...\n')
@@ -96,7 +96,7 @@ async function fixAndReimport() {
   const signersToKeep: any[] = []
   const signersToMove: any[] = []
 
-  // Check signer.json - entries with "safe" or "multisig" should be moved to wallets
+  // Check signers.json - entries with "safe" or "multisig" should be moved to wallets
   for (const signer of signers) {
     if (isWalletName(signer.name)) {
       signersToMove.push(signer)

@@ -26,7 +26,7 @@ async function importSigners() {
   console.log('🚀 Starting signer import...\n')
 
   // Read signers from JSON file
-  const signersFile = path.join(process.cwd(), 'data', 'signer.json')
+  const signersFile = path.join(process.cwd(), 'data', 'signers.json')
   
   if (!fs.existsSync(signersFile)) {
     console.error(`❌ Signers file not found: ${signersFile}`)

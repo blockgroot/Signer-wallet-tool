@@ -76,6 +76,7 @@ const CHAIN_ID_TO_API_CODE: Record<number, string> = {
   6342: 'mega',
   130: 'unichain',
   239: 'tac',
+  17000: 'sep', // Holesky testnet (uses Sepolia Safe API)
 }
 
 export const SUPPORTED_CHAINS: Chain[] = [
@@ -267,6 +268,13 @@ export const SUPPORTED_CHAINS: Chain[] = [
     safeApiUrl: 'https://api.safe.global/tx-service/tac',
     safeApiCode: 'tac',
     explorerUrl: 'https://explorer.tac.build',
+  },
+  {
+    id: 17000,
+    name: 'Holesky',
+    safeApiUrl: 'https://api.safe.global/tx-service/sep',
+    safeApiCode: 'sep',
+    explorerUrl: 'https://holesky.etherscan.io',
   },
 ]
 

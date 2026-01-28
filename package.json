@@ -18,6 +18,7 @@
     "import:json": "tsx scripts/import-from-json.ts",
     "sync:csv": "tsx scripts/sync-from-csv.ts",
     "cleanup:wallets": "tsx scripts/cleanup-orphaned-wallets.ts",
+    "cleanup:signer-wallets": "tsx scripts/remove-signer-addresses-from-wallets.ts",
     "test:setup": "bash scripts/test-setup.sh"
   },
   "dependencies": {

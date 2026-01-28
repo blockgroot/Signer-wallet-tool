@@ -89,7 +89,7 @@ async function syncFromCSV() {
 
   const csvFile = path.join(process.cwd(), 'data', 'safe-address-book-2026-01-13.csv')
   const walletsJsonFile = path.join(process.cwd(), 'data', 'wallets.json')
-  const signersJsonFile = path.join(process.cwd(), 'data', 'signer.json')
+  const signersJsonFile = path.join(process.cwd(), 'data', 'signers.json')
 
   if (!fs.existsSync(csvFile)) {
     console.error(`❌ CSV file not found: ${csvFile}`)
@@ -308,7 +308,7 @@ async function syncFromCSV() {
   console.log(`\n  Signers:`)
   console.log(`    ✅ Added: ${signersAdded}`)
   console.log(`    🔄 Updated: ${signersUpdated}`)
-  console.log(`\n  JSON files updated: wallets.json, signer.json`)
+  console.log(`\n  JSON files updated: wallets.json, signers.json`)
 }
 
 syncFromCSV()

@@ -18,7 +18,7 @@ const CHAIN_MAP: Record<string, { chainId: number; network: string }> = {
   sonic: { chainId: 146, network: 'Sonic' },
   berachain: { chainId: 80094, network: 'Berachain' },
   ink: { chainId: 57073, network: 'Ink' },
-  plasma: { chainId: 1666600000, network: 'Plasma' },
+  plasma: { chainId: 9745, network: 'Plasma' },
   stable: { chainId: 17000, network: 'Holesky' },
   mega: { chainId: 1329, network: 'MegaETH' },
   mnt: { chainId: 5000, network: 'Mantle' },

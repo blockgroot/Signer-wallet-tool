@@ -43,7 +43,6 @@ async function importFromJson() {
 
   const walletsJsonFile = path.join(process.cwd(), 'data', 'wallets.json')
   const signersJsonFile = path.join(process.cwd(), 'data', 'signers.json')
-  const signerJsonFile = path.join(process.cwd(), 'data', 'signer.json') // Legacy file name
 
   // Read JSON files
   let wallets: any[] = []
@@ -55,12 +54,8 @@ async function importFromJson() {
     console.log('⚠️  wallets.json not found, skipping wallets import')
   }
 
-  // Try signers.json first, then fall back to signer.json for backward compatibility
   if (fs.existsSync(signersJsonFile)) {
     signers = JSON.parse(fs.readFileSync(signersJsonFile, 'utf-8'))
-  } else if (fs.existsSync(signerJsonFile)) {
-    console.log('⚠️  Using legacy signer.json file (consider migrating to signers.json)')
-    signers = JSON.parse(fs.readFileSync(signerJsonFile, 'utf-8'))
   } else {
     console.log('⚠️  signers.json not found, skipping signers import')
   }
