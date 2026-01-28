@@ -264,10 +264,39 @@ async function importFromJson() {
       }
 
       // Find or create signer
+      // Try exact match first
       let signer = await prisma.signer.findFirst({
         where: { name: signerData.name },
         include: { addresses: true },
       })
+
+      // If not found, try to find by base name (e.g., "Dheeraj" matches "Dheeraj account 1")
+      // This handles cases where the signer name in DB might be different from JSON
+      if (!signer) {
+        // Extract base name (remove "account 1", "account 2", etc.)
+        const baseName = signerData.name
+          .replace(/\s*account\s*[0-9]+\s*/i, '')
+          .trim()
+        
+        if (baseName !== signerData.name && baseName.length > 0) {
+          // Try to find by base name
+          const allSigners = await prisma.signer.findMany({
+            where: {
+              name: {
+                startsWith: baseName,
+                mode: 'insensitive',
+              },
+            },
+            include: { addresses: true },
+          })
+          
+          // Find the best match (exact base name or starts with base name)
+          signer = allSigners.find(s => 
+            s.name.toLowerCase().trim() === baseName.toLowerCase().trim() ||
+            s.name.toLowerCase().trim().startsWith(baseName.toLowerCase().trim())
+          ) || null
+        }
+      }
 
       if (!signer) {
         signer = await prisma.signer.create({
@@ -280,7 +309,25 @@ async function importFromJson() {
         console.log(`✅ Created signer: ${signerData.name}`)
         signersAdded++
       } else {
-        signersSkipped++
+        // Update existing signer if department has changed
+        const currentDept = signer.department || null
+        const newDept = signerData.department || null
+        const needsUpdate = currentDept !== newDept
+        
+        if (needsUpdate) {
+          signer = await prisma.signer.update({
+            where: { id: signer.id },
+            data: {
+              department: newDept,
+            },
+            include: { addresses: true },
+          })
+          console.log(
+            `🔄 Updated signer: ${signer.name} (department: ${currentDept || 'null'} → ${newDept || 'null'})`
+          )
+        } else {
+          signersSkipped++
+        }
       }
 
       // Add addresses
