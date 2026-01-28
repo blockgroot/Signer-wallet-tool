@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { getSafesByOwner } from '@/lib/safeApi'
 import { syncSignersToJson } from '@/lib/json-sync'
 import { z } from 'zod'
 import { requireAuth } from '@/lib/auth'
@@ -32,64 +31,30 @@ export async function GET(
       return NextResponse.json({ error: 'Signer not found' }, { status: 404 })
     }
 
-    // Find all wallets where this signer's addresses are owners using getSafesByOwner
-    const walletsWhereSignerIsOwner: WalletBasicInfo[] = []
-    
-    // Get all wallets from database to match with Safe API results
-    const allWallets = await db.wallet.findMany()
-    const walletMap = new Map<string, typeof allWallets[0]>()
-    allWallets.forEach(w => {
-      walletMap.set(`${w.address.toLowerCase()}-${w.chainId}`, w)
+    // Fast path: return wallets from DB mapping only.
+    // Live Safe API lookup is moved to /api/signers/[id]/live-wallets and fetched on-demand from the UI.
+    const signerAddressIds = signer.addresses.map((a) => a.id)
+    const walletLinks = await db.walletSigner.findMany({
+      where: { signerAddressId: { in: signerAddressIds } },
+      include: { wallet: true },
     })
 
-    // For each signer address, get all Safes where it's an owner
-    for (const signerAddress of signer.addresses) {
-      try {
-        const safesByChain = await getSafesByOwner(signerAddress.address)
-        
-        // Match Safe API results with database wallets
-        for (const [chainIdStr, safes] of Object.entries(safesByChain)) {
-          const chainId = parseInt(chainIdStr, 10)
-          
-          for (const safe of safes) {
-            const walletKey = `${safe.address.toLowerCase()}-${chainId}`
-            const dbWallet = walletMap.get(walletKey)
-            
-            if (dbWallet) {
-              walletsWhereSignerIsOwner.push({
-                id: dbWallet.id,
-                address: safe.address,
-                name: dbWallet.name || safe.name,
-                chainId: chainId,
-                tag: dbWallet.tag,
-                threshold: safe.threshold,
-                totalSigners: safe.totalOwners,
-              })
-            }
-          }
-        }
-      } catch (error) {
-        // Log error but continue with other addresses
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        if (errorMessage.includes('SAFE_API_KEY is not set')) {
-          console.error('❌ SAFE_API_KEY is not set in environment variables')
-          // Don't break - continue with other addresses
-        } else {
-          if (process.env.NODE_ENV === 'development') {
-            console.warn(`Failed to get safes for owner ${signerAddress.address}: ${errorMessage}`)
-          }
-        }
-      }
-    }
-
-    // Remove duplicates (same wallet might appear for multiple addresses of same signer)
     const uniqueWallets = new Map<string, WalletBasicInfo>()
-    walletsWhereSignerIsOwner.forEach(w => {
+    for (const link of walletLinks) {
+      const w = link.wallet
       const key = `${w.address.toLowerCase()}-${w.chainId}`
       if (!uniqueWallets.has(key)) {
-        uniqueWallets.set(key, w)
+        uniqueWallets.set(key, {
+          id: w.id,
+          address: w.address,
+          name: w.name,
+          chainId: w.chainId,
+          tag: w.tag,
+          threshold: 0,
+          totalSigners: 0,
+        })
       }
-    })
+    }
 
     const signerWithWallets: SignerWithWallets = {
       id: signer.id,

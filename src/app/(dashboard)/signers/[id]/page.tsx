@@ -14,11 +14,17 @@ export default function SignerDetailPage() {
   const router = useRouter()
   const params = useParams()
   const signerId = params.id as string
+  const liveCacheKey = `signerLiveWallets:${signerId}`
+  const LIVE_CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
+
   const [signer, setSigner] = useState<SignerWithWallets | null>(null)
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const [liveLoading, setLiveLoading] = useState(false)
+  const [liveError, setLiveError] = useState<string | null>(null)
+  const [liveLoaded, setLiveLoaded] = useState(false)
 
   useEffect(() => {
     loadSigner()
@@ -50,7 +56,26 @@ export default function SignerDetailPage() {
         return
       }
       const data = await response.json()
+      // Load DB-first signer data immediately
       setSigner(data)
+
+      // If we previously fetched live wallets, restore from sessionStorage (5 min TTL)
+      try {
+        const raw = sessionStorage.getItem(liveCacheKey)
+        if (raw) {
+          const cached = JSON.parse(raw) as { ts: number; wallets: SignerWithWallets['wallets'] }
+          if (
+            typeof cached?.ts === 'number' &&
+            Date.now() - cached.ts < LIVE_CACHE_TTL_MS &&
+            Array.isArray(cached.wallets)
+          ) {
+            setSigner({ ...data, wallets: cached.wallets })
+            setLiveLoaded(true)
+          }
+        }
+      } catch {
+        // Ignore cache parse/availability errors
+      }
     } catch (error) {
       console.error('Failed to load signer:', error)
     } finally {
@@ -104,6 +129,37 @@ export default function SignerDetailPage() {
     alert('Add address functionality coming soon')
   }
 
+  const fetchLiveWallets = async () => {
+    if (!signer) return
+    setLiveLoading(true)
+    setLiveError(null)
+    try {
+      const response = await fetch(`/api/signers/${signerId}/live-wallets`, {
+        // Allow browser caching (API sets Cache-Control: private...)
+        cache: 'default',
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        setLiveError(data?.error || 'Failed to fetch live wallets')
+        return
+      }
+      const wallets = data.wallets || []
+      setSigner({ ...signer, wallets })
+      setLiveLoaded(true)
+
+      // Persist live wallets for a short time so back/forward navigation feels smooth.
+      try {
+        sessionStorage.setItem(liveCacheKey, JSON.stringify({ ts: Date.now(), wallets }))
+      } catch {
+        // Ignore storage errors (private browsing, quota, etc.)
+      }
+    } catch (e) {
+      setLiveError(e instanceof Error ? e.message : 'Failed to fetch live wallets')
+    } finally {
+      setLiveLoading(false)
+    }
+  }
+
   const handleLoginSuccess = () => {
     loadSession()
   }
@@ -140,29 +196,47 @@ export default function SignerDetailPage() {
 
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-bold text-black">Signer Details</h1>
-        {isAdmin && (
-          <div className="flex gap-2">
-            <button
-              onClick={handleEdit}
-              className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-            >
-              Edit Details
-            </button>
-            <button
-              onClick={handleAddAddress}
-              className="rounded-md bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
-            >
-              Add Address
-            </button>
-            <button
-              onClick={handleDelete}
-              className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-            >
-              Delete
-            </button>
-          </div>
-        )}
+        <div className="flex gap-2">
+          <button
+            onClick={fetchLiveWallets}
+            disabled={liveLoading}
+            className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60"
+            title="Fetch fresh signer→wallet ownership data from Safe API (can take a few seconds)"
+          >
+            {liveLoading ? 'Fetching…' : liveLoaded ? 'Refresh live wallets' : 'Fetch live wallets (Safe)'}
+          </button>
+
+          {isAdmin && (
+            <>
+              <button
+                onClick={handleEdit}
+                className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+              >
+                Edit Details
+              </button>
+              <button
+                onClick={handleAddAddress}
+                className="rounded-md bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
+              >
+                Add Address
+              </button>
+              <button
+                onClick={handleDelete}
+                className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </>
+          )}
+        </div>
       </div>
+
+      {liveError && (
+        <div className="mb-6 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-black">
+          <div className="font-semibold">Live lookup failed</div>
+          <div className="mt-1">{liveError}</div>
+        </div>
+      )}
 
       {/* Header Section */}
       <div className="mb-6 rounded-lg bg-white p-6 shadow">
@@ -219,7 +293,11 @@ export default function SignerDetailPage() {
       <div className="rounded-lg bg-white p-6 shadow">
         <h2 className="mb-4 text-xl font-semibold text-black">Multisig Wallets</h2>
         {signer.wallets.length === 0 ? (
-          <p className="text-black">This signer is not an owner of any wallets</p>
+          <p className="text-black">
+            {liveLoaded
+              ? 'This signer is not an owner of any wallets (based on live Safe lookup).'
+              : 'No wallets linked in DB yet. Click “Fetch live wallets (Safe)” to check ownership.'}
+          </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -268,7 +346,9 @@ export default function SignerDetailPage() {
                         <ChainBadge chainId={wallet.chainId} />
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
-                        {wallet.threshold} / {wallet.totalSigners}
+                        {wallet.threshold === 0 && wallet.totalSigners === 0
+                          ? '—'
+                          : `${wallet.threshold} / ${wallet.totalSigners}`}
                       </td>
                     </tr>
                   )

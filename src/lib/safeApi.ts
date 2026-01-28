@@ -325,6 +325,56 @@ export async function getSafesByOwner(owner: string): Promise<Record<number, Saf
 }
 
 /**
+ * Get all Safes owned by a specific address, but only on a subset of chainIds.
+ * This is useful to avoid fanning out across every SUPPORTED_CHAINS entry.
+ */
+export async function getSafesByOwnerOnChains(
+  owner: string,
+  chainIds: number[]
+): Promise<Record<number, SafeWithThreshold[]>> {
+  const checksummedOwner = getAddress(owner)
+  const apiKey = getApiKey()
+  const result: Record<number, SafeWithThreshold[]> = {}
+
+  const uniqueChainIds = Array.from(new Set(chainIds)).filter((id) => Number.isFinite(id))
+
+  for (const chainId of uniqueChainIds) {
+    const chain = getChainById(chainId)
+    if (!chain) continue
+
+    try {
+      const url = `${chain.safeApiUrl}/api/v2/owners/${checksummedOwner}/safes/`
+      const data = await fetchWithRetry<OwnerSafesResponse>(
+        url,
+        { Authorization: `Bearer ${apiKey}` },
+        2,
+        500
+      )
+
+      if (data.results && data.results.length > 0) {
+        result[chain.id] = data.results.map((safe) => ({
+          address: getAddress(safe.address),
+          threshold: safe.threshold,
+          totalOwners: safe.owners.length,
+          name: null,
+        }))
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      if (!errorMessage.includes('not found') && !errorMessage.includes('404')) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error(`❌ ${chain.name} (${chain.id}): ${errorMessage}`)
+        }
+      }
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 100))
+  }
+
+  return result
+}
+
+/**
  * Get Safe owners for a specific address on a chain
  */
 export async function getSafeOwners(
