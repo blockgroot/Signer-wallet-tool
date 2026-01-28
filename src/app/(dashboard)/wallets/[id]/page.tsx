@@ -272,9 +272,7 @@ export default function WalletDetailPage() {
                       />
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
-                      {signer.signerName || (
-                        <span className="text-black italic">Unmapped</span>
-                      )}
+                      {signer.signerName || '-'}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
                       {signer.department || '-'}

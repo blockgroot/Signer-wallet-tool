@@ -7,7 +7,7 @@ import ChainBadge from '@/components/ChainBadge'
 import AddressDisplay from '@/components/AddressDisplay'
 import LoginModal from '@/components/LoginModal'
 import EditSignerModal from '@/components/EditSignerModal'
-import { getExplorerUrl } from '@/lib/utils'
+import { getExplorerUrl, generateAddressLabels } from '@/lib/utils'
 import type { SignerWithWallets } from '@/types'
 
 export default function SignerDetailPage() {
@@ -267,19 +267,37 @@ export default function SignerDetailPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
                     Address
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
+                    Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
+                    Type
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
+                    Department
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {signer.addresses.map((address) => (
-                  <tr key={address.id} className="hover:bg-gray-50">
+                {generateAddressLabels(signer.name, signer.addresses).map((addr) => (
+                  <tr key={addr.id} className="hover:bg-gray-50">
                     <td className="whitespace-nowrap px-6 py-4">
                       <AddressDisplay
-                        address={address.address}
-                        name={signer.name}
+                        address={addr.address}
+                        name={null}
                         signerId={signer.id}
                         showFull={true}
                         linkToSigner={false}
                       />
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
+                      {addr.displayName}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
+                      {addr.displayType}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
+                      {signer.department || '-'}
                     </td>
                   </tr>
                 ))}

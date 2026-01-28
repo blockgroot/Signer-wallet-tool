@@ -50,6 +50,8 @@ model SignerAddress {
   id        String   @id @default(uuid())
   signerId  String   @map("signer_id")
   address   String   @unique
+  name      String?  // Optional explicit name for this address
+  type      String?  // Optional type: "hot wallet", "hardware wallet", "ledger", etc.
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   signer    Signer   @relation(fields: [signerId], references: [id], onDelete: Cascade)

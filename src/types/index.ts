@@ -33,6 +33,8 @@ export interface SignerWithWallets {
 export interface SignerAddress {
   id: string
   address: string
+  name: string | null
+  type: string | null
   createdAt: Date
 }
 

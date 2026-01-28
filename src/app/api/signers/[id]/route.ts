@@ -63,6 +63,8 @@ export async function GET(
       addresses: signer.addresses.map((addr) => ({
         id: addr.id,
         address: addr.address,
+        name: addr.name,
+        type: addr.type,
         createdAt: addr.createdAt,
       })),
       wallets: Array.from(uniqueWallets.values()),

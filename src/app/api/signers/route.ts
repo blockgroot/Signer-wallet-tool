@@ -44,6 +44,8 @@ export async function GET(request: NextRequest) {
       signerName: string
       department: string | null
       walletCount: number
+      addressName: string | null
+      addressType: string | null
     }> = []
 
     for (const signer of signers) {
@@ -72,6 +74,8 @@ export async function GET(request: NextRequest) {
           signerName: signer.name,
           department: signer.department,
           walletCount,
+          addressName: (address as any).name || null,
+          addressType: (address as any).type || null,
         })
       }
     }
