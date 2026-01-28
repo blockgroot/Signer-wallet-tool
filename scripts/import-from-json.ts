@@ -142,6 +142,52 @@ async function importFromJson() {
     } else {
       console.log('  ✅ Cleanup completed\n')
     }
+
+    // Step 0.5: Clean up orphaned wallets (wallets not in wallets.json)
+    console.log('🧹 Step 0.5: Cleaning up orphaned wallets...\n')
+    try {
+      const walletsJsonPath = path.join(process.cwd(), 'data', 'wallets.json')
+      if (fs.existsSync(walletsJsonPath)) {
+        const walletsJson = JSON.parse(fs.readFileSync(walletsJsonPath, 'utf-8'))
+        const validWallets = new Set<string>()
+        for (const wallet of walletsJson) {
+          if (wallet.address && wallet.chainId) {
+            const key = `${wallet.address.toLowerCase()}:${wallet.chainId}`
+            validWallets.add(key)
+          }
+        }
+
+        const dbWallets = await prisma.wallet.findMany({
+          include: {
+            walletSigners: true,
+          },
+        })
+
+        const orphanedWallets = dbWallets.filter((wallet) => {
+          const key = `${wallet.address.toLowerCase()}:${wallet.chainId}`
+          return !validWallets.has(key)
+        })
+
+        if (orphanedWallets.length > 0) {
+          console.log(`  🗑️  Found ${orphanedWallets.length} orphaned wallets (not in wallets.json)`)
+          for (const wallet of orphanedWallets) {
+            // Delete wallet (cascade will handle walletSigners)
+            await prisma.wallet.delete({ where: { id: wallet.id } })
+            console.log(
+              `    ✅ Removed: ${wallet.address} (Chain: ${wallet.chainId})${wallet.name ? ` - "${wallet.name}"` : ''}`
+            )
+          }
+          console.log('')
+        } else {
+          console.log('  ✅ No orphaned wallets found\n')
+        }
+      } else {
+        console.log('  ⚠️  wallets.json not found, skipping orphaned wallet cleanup\n')
+      }
+    } catch (error) {
+      console.error('  ⚠️  Orphaned wallet cleanup failed (non-fatal):', error)
+      console.log('  ⚠️  Continuing with import...\n')
+    }
   } catch (error) {
     console.error('  ⚠️  Cleanup failed (non-fatal):', error)
     console.log('  ⚠️  Continuing with import...\n')
