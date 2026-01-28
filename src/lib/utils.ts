@@ -2,6 +2,8 @@
  * Utility functions for the application
  */
 
+import { getChainById } from './chains'
+
 /**
  * Parse comma-separated tags string into array
  */
@@ -25,6 +27,14 @@ export function formatTags(tags: string[]): string | null {
  * Get explorer URL for an address on a given chain
  */
 export function getExplorerUrl(address: string, chainId: number): string | null {
+  // First, try to get explorer URL from SUPPORTED_CHAINS
+  const chain = getChainById(chainId)
+  if (chain?.explorerUrl) {
+    return `${chain.explorerUrl}/address/${address}`
+  }
+
+  // Fallback to hardcoded list for backward compatibility
+  // (in case some chains don't have explorerUrl in chains.ts)
   const explorerUrls: Record<number, string> = {
     1: `https://etherscan.io/address/${address}`,
     42161: `https://arbiscan.io/address/${address}`,
