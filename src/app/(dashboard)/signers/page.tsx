@@ -125,12 +125,14 @@ export default function SignersPage() {
 
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-bold text-black">Signers Directory</h1>
-        <button
-          onClick={handleAddUser}
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-        >
-          Add User
-        </button>
+        {isAdmin && (
+          <button
+            onClick={handleAddUser}
+            className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+          >
+            Add User
+          </button>
+        )}
       </div>
 
       <div className="mb-4">
