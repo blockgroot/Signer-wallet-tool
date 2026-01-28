@@ -20,6 +20,8 @@
     "cleanup:wallets": "tsx scripts/cleanup-orphaned-wallets.ts",
     "cleanup:signer-wallets": "tsx scripts/remove-signer-addresses-from-wallets.ts",
     "cleanup:signers": "tsx scripts/cleanup-and-reimport-signers.ts",
+    "cleanup:invalid-signers": "tsx scripts/cleanup-invalid-signer-addresses.ts",
+    "diagnose:signers": "tsx scripts/diagnose-production-signers.ts",
     "test:setup": "bash scripts/test-setup.sh"
   },
   "dependencies": {

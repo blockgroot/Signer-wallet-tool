@@ -41,6 +41,114 @@ async function importFromJson() {
     throw error
   }
 
+  // Step 0: Clean up invalid signer addresses before importing
+  // This ensures we start with a clean slate
+  console.log('🧹 Step 0: Cleaning up invalid signer addresses...\n')
+  try {
+    // Get all wallet addresses (these should NOT be signer addresses)
+    const walletAddresses = await prisma.wallet.findMany({
+      select: { address: true },
+    })
+    const walletAddressSet = new Set(
+      walletAddresses.map((w) => w.address.toLowerCase())
+    )
+
+    // Find signer addresses that are Safe wallets
+    const invalidSignerAddresses = await prisma.signerAddress.findMany({
+      where: {
+        address: {
+          in: Array.from(walletAddressSet),
+        },
+      },
+      include: {
+        signer: {
+          select: { id: true, name: true },
+        },
+      },
+    })
+
+    if (invalidSignerAddresses.length > 0) {
+      console.log(`  🗑️  Found ${invalidSignerAddresses.length} signer addresses that are Safe wallets`)
+      for (const addr of invalidSignerAddresses) {
+        await prisma.signerAddress.delete({ where: { id: addr.id } })
+        console.log(`    ✅ Removed: ${addr.address} (was linked to "${addr.signer.name}")`)
+      }
+    }
+
+    // Find signers with problematic names
+    const problematicSigners = await prisma.signer.findMany({
+      where: {
+        OR: [
+          { name: { equals: '' } },
+          { name: { contains: 'unknown', mode: 'insensitive' } },
+        ],
+      },
+      include: {
+        addresses: true,
+      },
+    })
+
+    // Also get signers with null names (separate query since Prisma doesn't allow null in OR)
+    const nullNameSigners = await prisma.signer.findMany({
+      where: {
+        name: null as any,
+      },
+      include: {
+        addresses: true,
+      },
+    })
+
+    // Combine both lists
+    const allProblematicSigners = [...problematicSigners, ...nullNameSigners]
+
+    if (allProblematicSigners.length > 0) {
+      console.log(`  🗑️  Found ${allProblematicSigners.length} signers with problematic names`)
+      for (const signer of allProblematicSigners) {
+        // Delete all addresses first
+        if (signer.addresses.length > 0) {
+          await prisma.signerAddress.deleteMany({
+            where: { signerId: signer.id },
+          })
+          console.log(`    ✅ Removed ${signer.addresses.length} addresses from signer "${signer.name || '(null)'}"`)
+        }
+        // Delete the signer
+        await prisma.signer.delete({ where: { id: signer.id } })
+        console.log(`    ✅ Removed signer: "${signer.name || '(null)'}"`)
+      }
+    }
+
+    // Clean up orphaned signers (signers with no addresses)
+    const orphanedSigners = await prisma.signer.findMany({
+      include: {
+        _count: {
+          select: { addresses: true },
+        },
+      },
+    })
+
+    const toDelete = orphanedSigners.filter((s) => s._count.addresses === 0)
+    if (toDelete.length > 0) {
+      console.log(`  🗑️  Found ${toDelete.length} orphaned signers (no addresses)`)
+      for (const signer of toDelete) {
+        await prisma.signer.delete({ where: { id: signer.id } })
+        console.log(`    ✅ Removed orphaned signer: "${signer.name}"`)
+      }
+    }
+
+    if (
+      invalidSignerAddresses.length === 0 &&
+      allProblematicSigners.length === 0 &&
+      toDelete.length === 0
+    ) {
+      console.log('  ✅ No invalid entries found, database is clean\n')
+    } else {
+      console.log('  ✅ Cleanup completed\n')
+    }
+  } catch (error) {
+    console.error('  ⚠️  Cleanup failed (non-fatal):', error)
+    console.log('  ⚠️  Continuing with import...\n')
+  }
+
   const walletsJsonFile = path.join(process.cwd(), 'data', 'wallets.json')
   const signersJsonFile = path.join(process.cwd(), 'data', 'signers.json')
 
