@@ -8,7 +8,7 @@ import WalletTag from '@/components/WalletTag'
 import AddressDisplay from '@/components/AddressDisplay'
 import LoginModal from '@/components/LoginModal'
 import EditWalletModal from '@/components/EditWalletModal'
-import { parseTags, getExplorerUrl } from '@/lib/utils'
+import { parseTags, getExplorerUrl, extractNameAndType } from '@/lib/utils'
 import type { WalletWithDetails } from '@/types'
 
 export default function WalletDetailPage() {
@@ -253,7 +253,10 @@ export default function WalletDetailPage() {
                     Signer Address
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
-                    Mapped Name
+                    Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
+                    Type
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-black">
                     Department
@@ -261,24 +264,51 @@ export default function WalletDetailPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {wallet.signers.map((signer, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <AddressDisplay
-                        address={signer.address}
-                        name={signer.signerName}
-                        signerId={signer.signerId}
-                        linkToSigner={!!signer.signerId}
-                      />
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
-                      {signer.signerName || '-'}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
-                      {signer.department || '-'}
-                    </td>
-                  </tr>
-                ))}
+                {wallet.signers.map((signer, index) => {
+                  // Extract name and type from signer name (e.g., "Timo ledger" -> name: "Timo", type: "Ledger")
+                  // "Dheeraj account 1" -> name: "Dheeraj", type: "Account 1" (but we'll hide Account types here)
+                  let displayName = '-'
+                  let displayType = '-'
+                  
+                  if (signer.signerName) {
+                    const { name, type } = extractNameAndType(signer.signerName)
+                    displayName = name && name.length > 0 ? name : signer.signerName
+                    // Show type if it exists and is not an Account number
+                    // Account numbers are context-specific to signer detail page
+                    displayType = type && !type.startsWith('Account ') ? type : '-'
+                  }
+                  
+                  return (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <AddressDisplay
+                          address={signer.address}
+                          name={null}
+                          signerId={signer.signerId}
+                          linkToSigner={!!signer.signerId}
+                        />
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        {signer.signerId ? (
+                          <Link
+                            href={`/signers/${signer.signerId}`}
+                            className="font-medium text-blue-600 hover:text-blue-800"
+                          >
+                            {displayName}
+                          </Link>
+                        ) : (
+                          <span className="text-black">{displayName}</span>
+                        )}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
+                        {displayType}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-black">
+                        {signer.department || '-'}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>

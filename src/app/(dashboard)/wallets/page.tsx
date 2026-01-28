@@ -192,7 +192,14 @@ export default function WalletsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
-              {filteredWallets.map((wallet) => {
+              {[...filteredWallets]
+                .sort((a, b) => {
+                  // Sort by wallet name lexicographically
+                  const nameA = (a.name || a.address).toLowerCase()
+                  const nameB = (b.name || b.address).toLowerCase()
+                  return nameA.localeCompare(nameB)
+                })
+                .map((wallet) => {
                 const explorerUrl = getExplorerUrl(wallet.address, wallet.chainId)
                 const tags = parseTags(wallet.tag)
                 
