@@ -153,6 +153,11 @@ export async function getSafeInfo(
   const checksummedAddress = getAddress(address)
   const apiKey = getApiKey()
   
+  // TAC chain (239) does not expose a public Safe API - skip it
+  if (chainId === 239 || chainName?.toLowerCase() === 'tac') {
+    throw new Error('TAC chain does not support Safe API. Safe wallet data is not available via API.')
+  }
+  
   // Try to get the API code from chainId or chainName
   let apiCode: string | null = null
   if (chainId) {
@@ -164,6 +169,11 @@ export async function getSafeInfo(
   
   // If we have a specific network, try that first
   if (apiCode) {
+    // Skip TAC from API calls (it doesn't expose public Safe API)
+    if (apiCode === 'tac') {
+      throw new Error('TAC chain does not support Safe API. Safe wallet data is not available via API.')
+    }
+    
     try {
       return await getSafeInfoForNetwork(checksummedAddress, apiCode, apiKey)
     } catch (error) {
@@ -251,8 +261,13 @@ async function getSafeInfoFromAllNetworks(
 ): Promise<SafeInfo> {
   const errors: string[] = []
   
-  // Try each network sequentially
+  // Try each network sequentially (skip TAC as it doesn't have a public Safe API)
   for (const chain of SUPPORTED_CHAINS) {
+    // Skip TAC chain - it doesn't expose a public Safe API
+    if (chain.safeApiCode === 'tac' || chain.id === 239) {
+      continue
+    }
+    
     try {
       const result = await getSafeInfoForNetwork(address, chain.safeApiCode, apiKey)
       if (process.env.NODE_ENV === 'development') {
@@ -292,7 +307,13 @@ export async function getSafesByOwner(owner: string): Promise<Record<number, Saf
   const result: Record<number, SafeWithThreshold[]> = {}
 
   // Process chains sequentially with small delays to avoid rate limiting
+  // Skip TAC chain as it doesn't expose a public Safe API
   for (const chain of SUPPORTED_CHAINS) {
+    // Skip TAC chain - it doesn't expose a public Safe API
+    if (chain.safeApiCode === 'tac' || chain.id === 239) {
+      continue
+    }
+    
     try {
       const url = `${chain.safeApiUrl}/api/v2/owners/${checksummedOwner}/safes/`
       const data = await fetchWithRetry<OwnerSafesResponse>(url, {
@@ -339,8 +360,18 @@ export async function getSafesByOwnerOnChains(
   const uniqueChainIds = Array.from(new Set(chainIds)).filter((id) => Number.isFinite(id))
 
   for (const chainId of uniqueChainIds) {
+    // Skip TAC chain - it doesn't expose a public Safe API
+    if (chainId === 239) {
+      continue
+    }
+    
     const chain = getChainById(chainId)
     if (!chain) continue
+    
+    // Double-check: skip TAC by API code as well
+    if (chain.safeApiCode === 'tac') {
+      continue
+    }
 
     try {
       const url = `${chain.safeApiUrl}/api/v2/owners/${checksummedOwner}/safes/`

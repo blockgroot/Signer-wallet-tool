@@ -33,7 +33,8 @@ const CHAIN_NAME_TO_API_CODE: Record<string, string> = {
   ink: 'ink',
   plasma: 'plasma',
   stable: 'stable',
-  'hyper-evm': 'hyper-evm',
+  'hyper-evm': 'hyper',
+  hyper: 'hyper',
   mega: 'mega',
   mnt: 'mantle', // Mantle
   mantle: 'mantle',
@@ -72,7 +73,7 @@ const CHAIN_ID_TO_API_CODE: Record<number, string> = {
   57073: 'ink',
   9745: 'plasma',
   2016: 'stable',
-  999: 'hyper-evm',
+  999: 'hyper',
   6342: 'mega',
   130: 'unichain',
   239: 'tac',
@@ -244,8 +245,8 @@ export const SUPPORTED_CHAINS: Chain[] = [
   {
     id: 999,
     name: 'Hyper EVM',
-    safeApiUrl: 'https://api.safe.global/tx-service/hyper-evm',
-    safeApiCode: 'hyper-evm',
+    safeApiUrl: 'https://api.safe.global/tx-service/hyper',
+    safeApiCode: 'hyper',
     explorerUrl: 'https://hyperevmscan.io',
   },
   {
@@ -265,7 +266,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
   {
     id: 239,
     name: 'TAC',
-    safeApiUrl: 'https://api.safe.global/tx-service/tac',
+    safeApiUrl: 'https://safe.tac.build', // TAC uses custom Safe API endpoint
     safeApiCode: 'tac',
     explorerUrl: 'https://explorer.tac.build',
   },
@@ -298,6 +299,10 @@ export function getSafeApiCodeFromChainId(chainId: number): string | null {
  * Get Safe API URL for a specific network code
  */
 export function getSafeApiUrlForNetwork(networkCode: string): string {
+  // TAC uses a custom Safe API endpoint
+  if (networkCode === 'tac') {
+    return 'https://safe.tac.build'
+  }
   return `https://api.safe.global/tx-service/${networkCode}`
 }
 
