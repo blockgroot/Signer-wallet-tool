@@ -55,9 +55,6 @@ npm run db:migrate
 npm run db:seed
 ```
 
-The default admin credentials are:
-- Username: `admin`
-- Password: `admin123`
 
 You can change these by setting `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables before running the seed script.
 
@@ -123,24 +120,14 @@ The application will be available at `http://localhost:3000`
 
 ## Deployment
 
-### Vercel with Vercel Postgres (Recommended)
+See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for a complete step-by-step guide to deploy on Vercel with PostgreSQL database.
 
-1. **Connect Repository**: Link your GitHub repo to Vercel
-2. **Create Database**: In Vercel project → Storage → Create Postgres database
-3. **Environment Variables**: Vercel automatically adds:
-   - `POSTGRES_URL` (use for `DATABASE_URL` in runtime)
-   - `POSTGRES_PRISMA_URL` (use for migrations)
-   - `POSTGRES_URL_NON_POOLING` (alternative for migrations)
-4. **Add SESSION_SECRET**: Generate with `openssl rand -hex 32`
-5. **Run Migrations**: 
-   ```bash
-   DATABASE_URL=$POSTGRES_URL_NON_POOLING npx prisma migrate deploy
-   ```
-6. **Seed Admin User**: `npm run db:seed`
-
-**Note**: Vercel Postgres handles connection pooling automatically - no additional configuration needed!
-
-See `VERCEL_DEPLOYMENT.md` for detailed deployment instructions.
+**Quick Summary:**
+1. Push code to GitHub
+2. Create Vercel project and link repository
+3. Create PostgreSQL database in Vercel Storage
+4. Set environment variables (`SESSION_SECRET`, `SAFE_API_KEY`, etc.)
+5. Deploy - migrations and data import run automatically!
 
 ## Database Schema
 

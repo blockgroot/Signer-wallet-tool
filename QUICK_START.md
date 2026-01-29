@@ -71,8 +71,8 @@ npm run db:seed
 ```
 
 **Default admin credentials:**
-- Username: `admin`
-- Password: `admin123`
+- Username: `****`
+- Password: `****`
 
 ## 4. Start the Server
 
@@ -83,7 +83,7 @@ npm run dev
 ## 5. Test the Application
 
 1. Open browser: http://localhost:3000
-2. Login with: `admin` / `admin123`
+2. Login with: your custom credentials
 3. You should see the Multisig Wallets dashboard
 
 ## Quick Test Checklist
@@ -119,8 +119,6 @@ npm run db:migrate
 # Re-seed admin user
 npm run db:seed
 
-# Or create manually:
-psql $DATABASE_URL -c "INSERT INTO users (username, password_hash, is_admin) VALUES ('admin', '\$2a\$10\$...', true);"
 ```
 
 ## Next: Add Test Data
