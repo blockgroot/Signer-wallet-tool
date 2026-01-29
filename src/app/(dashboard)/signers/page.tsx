@@ -28,6 +28,7 @@ export default function SignersPage() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [showAddUserModal, setShowAddUserModal] = useState(false)
+  const [copiedAddress, setCopiedAddress] = useState<string | null>(null)
 
   useEffect(() => {
     loadSigners()
@@ -113,6 +114,12 @@ export default function SignersPage() {
 
   const handleAddUserSuccess = () => {
     loadSigners() // Refresh the signer list
+  }
+
+  const copyAddress = (address: string) => {
+    navigator.clipboard.writeText(address)
+    setCopiedAddress(address)
+    setTimeout(() => setCopiedAddress(null), 2000)
   }
 
   // Memoize processed rows to avoid recalculating on every render
@@ -313,13 +320,22 @@ export default function SignersPage() {
               {processedRows.map((row) => (
                 <tr key={row.id} className="hover:bg-gray-50">
                   <td className="whitespace-nowrap px-6 py-4">
-                    <AddressDisplay
-                      address={row.address}
-                      name={null}
-                      signerId={row.signerId}
-                      linkToSigner={true}
-                      showFull={false}
-                    />
+                    <div className="flex items-center gap-2">
+                      <AddressDisplay
+                        address={row.address}
+                        name={null}
+                        signerId={row.signerId}
+                        linkToSigner={true}
+                        showFull={false}
+                      />
+                      <button
+                        onClick={() => copyAddress(row.address)}
+                        className="rounded-md bg-gray-100 px-2 py-1 text-xs text-black hover:bg-gray-200"
+                        title="Copy address"
+                      >
+                        {copiedAddress === row.address ? 'Copied' : 'Copy'}
+                      </button>
+                    </div>
                   </td>
                   <td className="whitespace-nowrap px-6 py-4">
                     <Link
