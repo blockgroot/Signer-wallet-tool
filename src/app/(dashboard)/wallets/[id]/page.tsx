@@ -20,6 +20,7 @@ export default function WalletDetailPage() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const [copiedAddress, setCopiedAddress] = useState<string | null>(null)
 
   useEffect(() => {
     loadWallet()
@@ -99,8 +100,15 @@ export default function WalletDetailPage() {
   const copyAddress = () => {
     if (wallet) {
       navigator.clipboard.writeText(wallet.address)
-      // TODO: Show toast notification
+      setCopiedAddress(wallet.address)
+      setTimeout(() => setCopiedAddress(null), 2000)
     }
+  }
+
+  const copySignerAddress = (address: string) => {
+    navigator.clipboard.writeText(address)
+    setCopiedAddress(address)
+    setTimeout(() => setCopiedAddress(null), 2000)
   }
 
   const handleLoginSuccess = () => {
@@ -179,7 +187,7 @@ export default function WalletDetailPage() {
                 className="rounded-md bg-gray-100 px-2 py-1 text-xs text-black hover:bg-gray-200"
                 title="Copy address"
               >
-                Copy
+                {copiedAddress === wallet.address ? 'Copied' : 'Copy'}
               </button>
               {explorerUrl && (
                 <a
@@ -281,12 +289,21 @@ export default function WalletDetailPage() {
                   return (
                     <tr key={index} className="hover:bg-gray-50">
                       <td className="whitespace-nowrap px-6 py-4">
-                        <AddressDisplay
-                          address={signer.address}
-                          name={null}
-                          signerId={signer.signerId}
-                          linkToSigner={!!signer.signerId}
-                        />
+                        <div className="flex items-center gap-2">
+                          <AddressDisplay
+                            address={signer.address}
+                            name={null}
+                            signerId={signer.signerId}
+                            linkToSigner={!!signer.signerId}
+                          />
+                          <button
+                            onClick={() => copySignerAddress(signer.address)}
+                            className="rounded-md bg-gray-100 px-2 py-1 text-xs text-black hover:bg-gray-200"
+                            title="Copy address"
+                          >
+                            {copiedAddress === signer.address ? 'Copied' : 'Copy'}
+                          </button>
+                        </div>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         {signer.signerId ? (

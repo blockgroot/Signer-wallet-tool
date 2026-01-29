@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { z } from 'zod'
 import { requireAuth } from '@/lib/auth'
+import { syncSignersToJson } from '@/lib/json-sync'
 
 const addAddressSchema = z.object({
   address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid address format'),
+  type: z.string().optional(),
+  name: z.string().optional(),
 })
 
 export async function POST(
@@ -19,7 +22,7 @@ export async function POST(
 
     const { id } = await params
     const body = await request.json()
-    const { address } = addAddressSchema.parse(body)
+    const { address, type, name } = addAddressSchema.parse(body)
 
     // Check if address already exists
     const existing = await db.signerAddress.findUnique({
@@ -36,12 +39,22 @@ export async function POST(
     const signerAddress = await db.signerAddress.create({
       data: {
         signerId: id,
-        address,
+        address: address.toLowerCase(),
+        type: type?.trim() || null,
+        name: name?.trim() || null,
       },
       include: {
         signer: true,
       },
     })
+
+    // Sync to JSON file
+    try {
+      await syncSignersToJson()
+    } catch (error) {
+      console.error('Failed to sync signers to JSON:', error)
+      // Don't fail the request if JSON sync fails
+    }
 
     return NextResponse.json(signerAddress, { status: 201 })
   } catch (error) {

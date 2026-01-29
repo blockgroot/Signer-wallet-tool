@@ -108,17 +108,17 @@
     ]
   },
   {
-    "name": "John Cairns",
-    "department": null,
-    "addresses": [
-      "0x82c4b61923029bf65e1083fd556246f567d5c7cc"
-    ]
-  },
-  {
     "name": "Kelp Multisig proposer EOA",
     "department": null,
     "addresses": [
       "0x477bab866eace0437bb57b809d03d34046b2fdc6"
+    ]
+  },
+  {
+    "name": "John Cairns",
+    "department": null,
+    "addresses": [
+      "0x82c4b61923029bf65e1083fd556246f567d5c7cc"
     ]
   },
   {

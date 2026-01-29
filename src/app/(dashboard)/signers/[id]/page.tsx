@@ -120,14 +120,6 @@ export default function SignerDetailPage() {
     }
   }
 
-  const handleAddAddress = () => {
-    if (!isAdmin) {
-      setShowLoginModal(true)
-      return
-    }
-    // TODO: Open add address modal
-    alert('Add address functionality coming soon')
-  }
 
   const fetchLiveWallets = async () => {
     if (!signer) return
@@ -213,12 +205,6 @@ export default function SignerDetailPage() {
                 className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
               >
                 Edit Details
-              </button>
-              <button
-                onClick={handleAddAddress}
-                className="rounded-md bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
-              >
-                Add Address
               </button>
               <button
                 onClick={handleDelete}
